@@ -13,15 +13,18 @@ Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus 
 
 - Nalaro Class adalah LMS guru dan siswa untuk kelas, materi, diskusi, presensi, pertemuan, tugas, kuis mandiri, Bank Kuis, dan Nalaro Live.
 - Target arsitektur: React/Vite di Cloudflare Pages; API LMS dan gateway AI di Worker; data LMS di D1; sesi live aktif di Durable Object SQLite; Firebase Authentication tetap; Cloudinary untuk media.
+- Klarifikasi pengguna 3 Oktober 2026: backend telah bermigrasi penuh ke Cloudflare. Pages akun lama dan baru masih berdampingan; laporan error pada `nalaro.web.id` berasal dari Pages lama. Seluruh pengembangan aktif mengikuti Cloudflare; source AWS hanya legacy. Push/memindahkan domain ke Pages akun baru akan dilakukan kemudian.
 - Profil wajah MVP tetap di Firestore dengan aturan akses pemilik. Kamera, embedding, dan pencocokan 1:1 berlangsung di browser; API presensi masih memeriksa auth, keanggotaan, sesi, duplikasi, dan lokasi.
 - Pengguna mengizinkan data LMS lama di DynamoDB ditinggalkan. D1 yang kosong setelah cutover bukan bukti kegagalan migrasi.
 - Remote `url` menunjuk `hulumzz/Quizzy` dan remote `pages` menunjuk `khoirulzz/nalaroclass`. Pengguna mengizinkan sinkronisasi keduanya; push `pages/main` terbukti memicu deployment Pages produksi.
 
 ## Posisi saat ini
 
-**Tahap: RELEASE CANDIDATE yang sudah live dan teruji API/browser produksi.** Gate akhir yang belum terpenuhi adalah uji Live pada perangkat fisik berbeda; kamera/GPS presensi opsional juga belum diuji. Rincian dan rollback ada di [laporan release Oktober](production-release-2026-10.md).
+**Tahap: RELEASE CANDIDATE.** Bukti API/browser produksi 2 Oktober tetap historis; patch terbaru belum diterapkan oleh tugas audit ini. Gate Live perangkat fisik, kamera/GPS, dan kapasitas masih terbuka. Audit source, bundle publik, dan perbaikan progres/agenda 3 Oktober ada di [laporan audit](nalaro-audit-2026-10-03.md); masih ada gap kuis, UX grading, dan benchmark Insights. Rincian release lama dan rollback ada di [laporan release Oktober](production-release-2026-10.md).
 
-Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terlihat pada commit lokal `f4d95d4`. Pembaruan UX 3 Oktober 2026 menambahkan rekam/presensi wajah otomatis dengan panduan dan pola card responsif; pembaruan ini berada di working tree, belum commit/push/deploy. Lint, build, 19 tes frontend, dan browser lokal dengan data/detektor/kamera sintetis lulus. D1 lokal sampai `0014` berdasarkan catatan tugas sebelumnya; remote, Firebase, Worker/Pages, model Human pada kamera nyata, serta perangkat fisik tidak diverifikasi ulang dalam tugas UX ini. Bukti produksi release 2 Oktober tidak memverifikasi patch terbaru.
+Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terlihat pada commit lokal `f4d95d4`. Pembaruan UX rekam/presensi wajah otomatis dan card kini terlihat pada commit lokal `bbe0c95`; keberadaan commit diverifikasi pada audit 3 Oktober, tetapi push/deploy commit itu tidak diverifikasi ulang. Bukti tugas UX sebelumnya: lint/build, 19 tes frontend, dan browser sintetis lulus. Patch progres/agenda saat ini berada di working tree di atas `bbe0c95`, belum commit/push/deploy. Audit baru lulus lint/build, 26 tes frontend, 126 tes kompatibilitas backend legacy, 66 tes Worker/D1, syntax checks, dan browser materi/agenda lokal sintetis 320/1440 px. D1 fixture sampai `0014`; status migrasi remote, Firebase nyata, API terautentikasi, model/kamera/GPS nyata, dan perangkat fisik tidak diverifikasi ulang. Bukti release 2 Oktober tidak memverifikasi patch terbaru.
+
+- Pemeriksaan bundle publik 3 Oktober: `nalaro.web.id` menayangkan `index-Bq4tkA-f.js` dengan API AWS; `nalaroclass.pages.dev` menayangkan `index-CEmCnQrr.js` dengan Worker. Worker `/health` HTTP 200 dan route Insights tanpa auth HTTP 401; Lambda lama route Insights HTTP 404. Kepemilikan akun/dashboard tidak diperiksa. Ini selaras dengan konfirmasi pengguna bahwa pengujian tadi dilakukan di Pages lama.
 
 - PR #5/#6/#7 sudah diintegrasikan ke main. Source runtime final `d91d115` sudah di-push ke remote `url` dan `pages`; Pages membangun repo `khoirulzz/nalaroclass` branch main. Sepuluh variabel build API/AI/Firebase produksi dibandingkan dengan lokal dan cocok tanpa mencetak nilainya.
 - Worker `nalaro-api` versi `247b0f1c-4018-428c-bf5b-ba3f294c67a6` terdeploy dengan keep-vars. D1 remote sudah sampai `0012`, tidak ada pending migration, FK check bersih, backup sebelum migrasi disimpan lokal/ignored.
@@ -50,7 +53,8 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 | --- | --- | --- |
 | Login, profil, peran guru/siswa | Firebase Auth + role Firestore/D1. Anchor role, race guard, negative API smoke dan login guru/siswa browser produksi lulus | `workers/src/services/account-role.js`, `workers/src/middleware/auth.js`, `firestore.rules` |
 | Kelas dan anggota | Buat, gabung, daftar, detail, dan daftar anggota ada. Informasi pengajar/anggota/status digabung dalam satu card; pola card konten dan tab aktif responsif lulus browser lokal sintetis 320?1440 px. Pengaturan anggota lanjutan belum ada | `workers/src/routes/classes.js`, `src/app/routes.jsx` |
-| Materi, progres, bookmark, diskusi | Ada di frontend dan Worker; upload memakai signature Cloudinary | `workers/src/routes/materials.js`, `workers/src/routes/discussions.js` |
+| Materi, progres, bookmark, diskusi | Progres aktif per blok dan estimasi menit, autosave/retry/completion, upsert D1 monotonik, query daftar tanpa N+1, dan library berbasis keanggotaan lulus regresi/browser lokal. Patch belum deploy. Lampiran/video memakai alokasi estimasi, bukan parsing isi/durasi sebenarnya; diskusi tetap tersedia | `workers/src/repositories/material.repository.js`, `src/pages/MaterialReader.jsx`, `src/features/materials/reading-progress.js`, `workers/src/routes/discussions.js` |
+| Agenda belajar | Kini memakai pertemuan dan tenggat tugas kelas aktif dalam WIB; akses guru/siswa, draf/publikasi, navigasi minggu dan error/retry lulus lokal. Belum deploy; reminder/kalender pribadi/jam pertemuan belum ada | `workers/src/routes/agenda.js`, `workers/src/repositories/agenda.repository.js`, `src/components/dashboard/DashboardWidgets.jsx` |
 | Pertemuan pembelajaran | Ada, termasuk pengaitan materi/kuis/presensi/tugas | `workers/src/routes/learning-sessions.js` |
 | Presensi lokasi dan wajah MVP | Rotation/mode/metode dan rekap tersedia. UX lokal baru: persetujuan sebelum kamera, rekam otomatis depan/kanan/kiri/depan, presensi dengan challenge acak dan pencatatan otomatis, batal/retry/cleanup kamera. Tes frontend dan browser sintetis lulus; matching/model/kamera/GPS nyata serta deployment patch belum diverifikasi | `src/features/face/face-engine.js`, `src/pages/ClassAttendance.jsx`, `workers/src/repositories/attendance.repository.js`, `workers/migrations/0013_attendance_verification.sql` |
 | Kuis kelas dan kuis umum | Editor, publikasi, percobaan, penilaian, hasil, impor/ekspor ada. Snapshot nama self-paced kelas dan fallback attempt lama lulus regresi lokal setelah membership diubah/dihapus; patch belum deploy | `workers/src/repositories/quiz.repository.js`, `workers/migrations/0014_quiz_attempt_student_name.sql`, `workers/src/routes/general-quizzes.js` |
@@ -58,7 +62,7 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 | Bank Kuis | Publikasi katalog, salin sebagai draf, penarikan, impor/ekspor ada; moderasi/rating/analytics belum ada | `workers/src/routes/quiz-bank.js` |
 | Nalaro Live | Terdeploy dan teruji produksi dengan socket 1 host + 4 pemain, receipt/reconnect, alarm deadline, hasil complete D1/CSV/Insights. Browser context dan viewport diuji; perangkat fisik dan kapasitas lebih besar belum | `workers/src/durable/LiveQuizRoom.js`, `workers/src/repositories/live-result.repository.js`, `src/pages/LiveQuizHost.jsx`, `src/pages/LiveQuizPlayer.jsx` |
 | AI Assist | Gateway dan draf materi/kuis yang ditinjau guru ada; feedback penilaian di layanan AI belum terhubung sebagai alur UI tugas | `workers/src/routes/ai.js`, `workers/src/services/ai.js`, `src/components/AiAssistModal.jsx` |
-| Learning Insights | Terdeploy dan teruji API/browser guru-siswa. Evidence kuis/graded task/Live terautentikasi, fairness, privacy, complete snapshot, dan layout desktop/mobile diperiksa | `workers/src/repositories/learning-analytics.repository.js`, `src/pages/ClassAnalytics.jsx`, `docs/learning-insights.md` |
+| Learning Insights | Bukti release 2 Oktober API/browser dan regresi lokal 3 Oktober mendukung evidence/fairness/privacy. Route siswa Worker ada; 404 yang dilaporkan berasal dari Pages/API lama. Benchmark data besar dan browser terautentikasi pada Pages tujuan belum diperiksa ulang | `workers/src/repositories/learning-analytics.repository.js`, `src/pages/ClassAnalytics.jsx`, `docs/learning-insights.md` |
 
 ## Pekerjaan tersisa
 
@@ -76,7 +80,7 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 
 - [x] Checkpoint A–D: konversi rotation, kontrak mode/metode presensi, UI guru/siswa/rekap, migrasi additive dan snapshot nama dari membership D1 selesai lokal.
 - [x] Checkpoint E: lint/build/frontend/backend legacy/59 tes Worker/syntax check dan `git diff --check` lulus; D1 lokal berhasil dimigrasikan sampai `0014`.
-- [ ] Commit patch terdahulu terlihat lokal pada `f4d95d4`; status push/deploy/migrasi remote tidak diperiksa ulang dalam tugas UX. Pembaruan UX baru belum commit/push/deploy. Penerapan produksi tetap terpisah dari validasi lokal.
+- [ ] Commit patch terdahulu terlihat lokal pada `f4d95d4` dan UX pada `bbe0c95`; status push/deploy/migrasi remote belum diverifikasi ulang dalam audit 3 Oktober. Patch progres/agenda baru belum commit/push/deploy. Penerapan produksi tetap terpisah dari validasi lokal.
 - [ ] Setelah patch diterapkan, uji UI/browser/API ketiga mode, kamera allow/deny/retry, daftar/hapus/daftar ulang profil, wajah benar/salah, challenge, cahaya normal/redup, Chrome desktop/Android, serta GPS di dalam/luar radius pada perangkat nyata. Kalibrasi threshold dan gerakan lintas frame masih pekerjaan lanjutan; threshold tidak diubah.
 - [ ] Cleanup kecil di `update.md` (questionOrder draft, Arrange touched, busy grading, benchmark Insights/CSP/model delivery) berada di luar patch ini.
 
@@ -86,11 +90,16 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 - [x] Presensi menjalankan depan/challenge arah acak/depan dan mencatat hadir otomatis setelah cocok; kegagalan pencatatan membutuhkan retry eksplisit. Pengaturan wajah wajib serta GPS server tetap berlaku.
 - [x] Card kuis umum/kelas, Bank Kuis, tugas, diskusi memakai `ContentCard`; perbaikan tipografi/caption/ikon/aksi dan card materi/filter/riwayat diterapkan. Pengajar/anggota/status memakai satu `ClassSummary`; tab aktif otomatis terlihat pada nav yang dapat digeser.
 - [x] Lint, build, 19 tes frontend, syntax smoke script, dan browser lokal sintetis: 10 halaman ? 4 viewport, tambahan enam halaman mode guru pada 320/1440 px, serta alur rekam/presensi/camera-deny/cancel/retry lulus.
-- [ ] Commit/push/deploy pembaruan UX, browser terautentikasi terhadap API/Firestore nyata, dan uji kamera/model/GPS Android/iOS/desktop nyata belum dilakukan pada tugas ini. Kalibrasi arah/threshold/gerak dan batas anti-spoof MVP tetap memerlukan perangkat nyata.
+- [ ] Verifikasi push/deploy pembaruan UX (commit lokal `bbe0c95`), browser terautentikasi terhadap API/Firestore nyata, dan kamera/model/GPS Android/iOS/desktop nyata. Kalibrasi arah/threshold/gerak dan batas anti-spoof MVP tetap memerlukan perangkat nyata.
 
 ### Fitur dan pengembangan lanjutan
 
-- [ ] Hubungkan agenda/jadwal nyata; widget dashboard masih menyatakan “Agenda belum tersedia”.
+- [x] Hubungkan agenda ke pertemuan dan tenggat tugas kelas aktif; implementasi dan regresi/browser lokal lulus 3 Oktober. Deployment Worker/Pages belum dilakukan; kalender pribadi/reminder/jam pertemuan tetap pengembangan lanjutan.
+- [ ] Terapkan patch progres/agenda pada Worker dan Pages akun tujuan. Samakan API/AI/Firebase, repo/branch build, dan domain; periksa migrasi remote `0013`/`0014` untuk patch sebelumnya. Agenda tidak membutuhkan migrasi baru. Push Pages saja tidak memperbarui Worker.
+- [ ] Persist `questionOrder` draft kuis agar reload tidak mengacak ulang; pisahkan jawaban awal Arrange dari status sudah disentuh/dikonfirmasi. Temuan source masih ada pada audit 3 Oktober.
+- [ ] Ubah indikator grading dari satu `busy` global menjadi status per siswa; ukur Learning Insights yang membaca seluruh dataset/histori kelas.
+- [ ] Analisis isi/durasi sebenarnya PDF/Office/video jika estimasi lampiran yang presisi diperlukan. Saat ini estimasi isi teks dimuat ditambah alokasi media yang dijelaskan pada UI.
+- [ ] Sesuaikan canonical/OG/sitemap setelah domain produksi pada Pages akun baru ditetapkan; saat ini masih `nalaroclass.pages.dev`.
 - [ ] Tambahkan pengaturan anggota kelas lanjutan bila diperlukan, misalnya mengeluarkan anggota atau mengubah hak akses; route sekarang baru menyediakan daftar anggota.
 - [ ] Pengembangan setelah beta: laporan progres guru, notifikasi/jadwal, rubrik tugas, moderasi/pencarian/rating Bank Kuis, dan preview PPT/PPTX hasil konversi. Ini roadmap, bukan syarat untuk menyatakan API inti sudah bermigrasi.
 
@@ -101,6 +110,16 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 - HTTP/CORS dan tes otomatis tidak menggantikan uji UI browser, transfer Cloudinary nyata, perangkat kamera/lokasi, atau uji beban live.
 
 ## Riwayat perubahan
+
+### 3 Okt 2026 - Audit Cloudflare, progres materi otomatis dan agenda nyata
+
+- Pengguna menegaskan migrasi backend Cloudflare penuh; error tadi berasal dari Pages akun lama. Audit bundle publik membedakan `nalaro.web.id` (AWS lama) dan `nalaroclass.pages.dev` (Worker). Tidak ada perubahan AWS, akun/dashboard, domain atau deployment. Route Insights Worker merespons 401 tanpa auth, Lambda lama 404; Worker health 200. Tidak ada uji akun produksi terautentikasi baru.
+- Reader kini menghitung estimasi kata/menit dan alokasi media, menambah progres dari waktu aktif pada bagian blok yang terlihat, pause hidden/unfocused/idle, serta menyimpan setiap 5 detik dengan antrean/retry/keepalive. Maksimal otomatis 99%; tombol selesai mengirim 100 dan menunggu sukses. D1 mempertahankan persentase maksimum dan tanggal selesai pertama sehingga respons terlambat tidak menurunkan progres. Daftar 100 materi siswa memakai maksimal tiga query termasuk pemeriksaan akses; library mengabaikan keanggotaan yang dicabut.
+- Agenda dashboard guru/siswa mengambil pertemuan/tenggat tugas dari Worker dengan filter kelas aktif, akses, publikasi dan tanggal WIB, batas 31 hari/100 agenda, navigasi minggu, loading/empty/error/retry. Ini bukan reminder/kalender pribadi atau jadwal jam pertemuan. Build menolak API AWS/HTTP agar konfigurasi lama tidak lolos build baru. Isi PDF/Office dan durasi video sebenarnya belum dianalisis.
+- Audit menyisakan questionOrder draft setelah reload, status Arrange touched, indikator grading per siswa, benchmark Insights, anggota lanjutan, domain/metadata tujuan, serta gate fisik Live/kamera/GPS. Rincian bukti dan batas fitur: `docs/nalaro-audit-2026-10-03.md`.
+- Berkas utama: `src/features/materials/reading-progress.js`, `reading-progress.test.js`, `hooks/useReadingProgress.js`, `MaterialBlocks.jsx`, `src/pages/MaterialReader.jsx`, `src/services/api.js`, `material.service.js`, `workers/src/repositories/material.repository.js`, `agenda.repository.js`, `workers/src/routes/agenda.js`, `workers/src/index.js`, `src/services/agenda.service.js`, `src/features/agenda/calendar.js`, `src/components/dashboard/DashboardWidgets.jsx`, `StudentDashboard.jsx`, CSS, `config/backend-target.js`, `vite.config.js`, tes D1 dan `workers/scripts/smoke-learning-local.mjs`.
+- Validasi: 14/14 regresi terarah; `npm.cmd run validate` lulus lint/build, 26/26 frontend, 126/126 backend legacy compatibility, 66/66 Worker dan syntax checks. Browser Chrome lokal dengan fixture membuktikan progres >5%, estimasi, pause hidden, selesai/reload, gagal/retry, agenda/link per role/navigasi/loading/error serta layout 320/1440 px; runtime errors 0. Screenshot diperiksa lokal/ignored. `git diff --check` diperiksa pada akhir tugas. Tidak ada validasi API/Firebase/Cloudinary terautentikasi, kamera/GPS/perangkat nyata atau produksi patch.
+- Commit/push/deploy: patch ini belum commit/push/deploy; berada di working tree di atas `bbe0c95`. Tidak ada migrasi baru. Status remote/push/deploy `bbe0c95` tidak diperiksa; penerapan Worker dan Pages tetap dua langkah terpisah.
 
 ### 3 Okt 2026 - Rekam/presensi wajah otomatis dan konsistensi card
 

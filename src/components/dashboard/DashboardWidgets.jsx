@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, CalendarIcon, ClassesIcon, QuizIcon } from '../icons';
-import { Card, SectionHeader, buttonClassName } from '../ui';
+import { Button, Card, SectionHeader, Skeleton, buttonClassName } from '../ui';
+import { agendaErrorMessage, getAgenda } from '../../services/agenda.service';
+import { dateKey, jakartaDate, weekDates } from '../../features/agenda/calendar.js';
 
 export function WelcomeBanner({ name, role = 'teacher' }) {
   const teacher = role === 'teacher';
@@ -31,26 +33,41 @@ export function MetricCard({ icon: Icon, label, value, detail, tone = 'purple' }
   return <div className={`qz-metric qz-tone-${tone}`}><span className="qz-metric__icon"><Icon size={21} /></span><div><span className="qz-metric__label">{label}</span><strong>{value}</strong><span className="qz-metric__detail">{detail}</span></div></div>;
 }
 
-// Calendar navigation only: agenda data is not available yet.
-export function WeekAgenda() {
-  const [today] = useState(() => new Date());
+export function WeekAgenda({ role = 'teacher' }) {
+  const [today] = useState(() => jakartaDate());
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState(today);
-  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (today.getDay() + 6) % 7 + offset * 7);
-  const days = Array.from({ length: 7 }, (_, index) => new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + index));
-  const sameDay = (left, right) => left.toDateString() === right.toDateString();
+  const [reload, setReload] = useState(0);
+  const [state, setState] = useState({ status: 'loading', events: [], error: '', truncated: false });
+  const days = weekDates(today, offset);
+  const from = dateKey(days[0]);
+  const to = dateKey(days[6]);
+  const dateFormat = (value, options) => new Intl.DateTimeFormat('id-ID', { ...options, timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+  useEffect(() => {
+    const controller = new AbortController();
+    setState({ status: 'loading', events: [], error: '', truncated: false });
+    getAgenda(from, to, { signal: controller.signal })
+      .then((agenda) => { if (!controller.signal.aborted) setState({ status: 'success', events: agenda.events, truncated: agenda.truncated, error: '' }); })
+      .catch((error) => { if (!controller.signal.aborted) setState({ status: 'error', events: [], error: agendaErrorMessage(error), truncated: false }); });
+    return () => controller.abort();
+  }, [from, to, role, reload]);
+  const events = state.events.filter((event) => event.date === selected);
   const changeWeek = (direction) => {
     setOffset((value) => value + direction);
-    setSelected(new Date(selected.getFullYear(), selected.getMonth(), selected.getDate() + direction * 7));
+    setSelected(dateKey(new Date(Date.parse(`${selected}T00:00:00Z`) + direction * 7 * 86400000)));
   };
   return (
     <Card className="qz-agenda">
-      <SectionHeader title="Agenda belajar" action={<CalendarIcon size={20} />} />
-      <div className="qz-agenda__month"><span>{new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(selected)}</span><div><button type="button" onClick={() => changeWeek(-1)} aria-label="Minggu sebelumnya">‹</button><button type="button" onClick={() => changeWeek(1)} aria-label="Minggu berikutnya">›</button></div></div>
+      <SectionHeader title="Agenda belajar" description="Pertemuan dan tenggat tugas · WIB" action={<CalendarIcon size={20} />} />
+      <div className="qz-agenda__month"><span>{dateFormat(selected, { month: 'long', year: 'numeric' })}</span><div><button type="button" onClick={() => changeWeek(-1)} aria-label="Minggu sebelumnya">‹</button><button type="button" onClick={() => changeWeek(1)} aria-label="Minggu berikutnya">›</button></div></div>
       <div className="qz-week" role="group" aria-label="Pilih tanggal">
-        {days.map((day) => <button type="button" key={day.toDateString()} aria-pressed={sameDay(day, selected)} aria-current={sameDay(day, today) ? 'date' : undefined} aria-label={new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(day)} onClick={() => setSelected(day)}><span>{new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(day)}</span><strong>{day.getDate()}</strong><i /></button>)}
+        {days.map((day) => { const key = dateKey(day); const count = state.events.filter((event) => event.date === key).length; return <button type="button" key={key} aria-pressed={key === selected} aria-current={key === today ? 'date' : undefined} aria-label={`${dateFormat(key, { dateStyle: 'full' })}${count ? `, ${count} agenda` : ''}`} onClick={() => setSelected(key)}><span>{dateFormat(key, { weekday: 'short' })}</span><strong>{day.getUTCDate()}</strong><i className={count ? 'has-events' : undefined} /></button>; })}
       </div>
-      <div className="qz-agenda__empty" aria-live="polite"><span className="qz-agenda__date">{new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'short' }).format(selected)}</span><CalendarIcon size={28} /><strong>Agenda belum tersedia</strong><p>Jadwal kelas akan tampil saat layanan agenda aktif.</p></div>
+      <div className="qz-agenda__content" aria-live="polite">
+        <span className="qz-agenda__date">{dateFormat(selected, { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+        {state.status === 'loading' ? <div role="status" aria-label="Memuat agenda"><Skeleton height={84} /></div> : state.status === 'error' ? <div className="qz-inline-state qz-inline-state--error" role="alert">{state.error}<Button variant="ghost" size="sm" onClick={() => setReload((value) => value + 1)}>Coba lagi</Button></div> : events.length ? <ul className="qz-agenda__events">{events.map((event) => <li key={`${event.kind}-${event.id}`}><Link to={event.kind === 'task' ? `/${role}/classes/${event.classId}/tasks/${event.id}` : `/${role}/classes/${event.classId}/sessions`}><small>{event.kind === 'task' ? `Tenggat ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(new Date(event.dueAt))} WIB` : 'Pertemuan'}{event.status === 'draft' ? ' - Draf' : ''}</small><strong>{event.title}</strong><span>{event.className}</span></Link></li>)}</ul> : <div className="qz-agenda__empty"><CalendarIcon size={28} /><strong>Belum ada agenda hari ini</strong><p>Pertemuan dan tenggat tugas kelasmu akan muncul sesuai tanggalnya.</p></div>}
+        {state.truncated ? <p className="qz-agenda__note">Menampilkan 100 agenda pertama. Buka kelas untuk melihat jadwal lainnya.</p> : null}
+      </div>
       <button type="button" className="qz-text-button" onClick={() => { setOffset(0); setSelected(today); }}>Kembali ke hari ini <ArrowRightIcon size={15} /></button>
     </Card>
   );

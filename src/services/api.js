@@ -12,7 +12,7 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiRequest(path, { method = 'GET', body, signal, headers = {} } = {}) {
+export async function apiRequest(path, { method = 'GET', body, signal, headers = {}, keepalive = false } = {}) {
   if (!appEnv.apiUrl) {
     throw new ApiError('Layanan Nalaro Class belum dikonfigurasi.', { code: 'API_NOT_CONFIGURED' });
   }
@@ -35,6 +35,7 @@ export async function apiRequest(path, { method = 'GET', body, signal, headers =
       },
       body: body ? JSON.stringify(body) : undefined,
       signal,
+      keepalive,
     });
   } catch (error) {
     if (error.name === 'AbortError') throw error;

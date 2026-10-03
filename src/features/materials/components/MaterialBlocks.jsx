@@ -1,3 +1,4 @@
+import { cloneElement } from 'react';
 import { LinkIcon } from '../../../components/icons';
 
 function youtubeEmbed(value) {
@@ -12,8 +13,8 @@ function youtubeEmbed(value) {
   }
 }
 
-export default function MaterialBlocks({ blocks }) {
-  return <div className="qz-reader-blocks">{blocks.map((block) => {
+export default function MaterialBlocks({ blocks, contentRef }) {
+  const rendered = blocks.map((block) => {
     if (block.type === 'heading') return block.level === 3 ? <h3 key={block.id}>{block.content}</h3> : <h2 key={block.id}>{block.content}</h2>;
     if (block.type === 'paragraph') return <p key={block.id}>{block.content}</p>;
     if (block.type === 'quote') return <blockquote key={block.id}>{block.content}</blockquote>;
@@ -28,5 +29,6 @@ export default function MaterialBlocks({ blocks }) {
     if (block.type === 'file' && /\.pdf(?:$|[?#])/i.test(block.url)) return <figure key={block.id} className="qz-pdf-preview"><figcaption>{block.label || 'Dokumen PDF'}</figcaption><iframe src={block.url} title={block.label || 'Preview PDF'} loading="lazy" /><a className="qz-resource-link" href={block.url} target="_blank" rel="noreferrer"><LinkIcon size={20} /><span><strong>Buka atau unduh PDF</strong><small>Jika preview tidak didukung perangkatmu</small></span></a></figure>;
     if (block.type === 'link' || block.type === 'file') return <a key={block.id} className="qz-resource-link" href={block.url} target="_blank" rel="noreferrer"><LinkIcon size={20} /><span><strong>{block.label || (block.type === 'file' ? 'Unduh file' : 'Buka tautan')}</strong><small>{block.type === 'file' ? 'Dokumen Office dan file lain diunduh untuk dibuka.' : block.url}</small></span></a>;
     return null;
-  })}</div>;
+  });
+  return <div className="qz-reader-blocks" ref={contentRef}>{rendered.map((node, index) => node ? cloneElement(node, { 'data-reading-block': blocks[index].id }) : null)}</div>;
 }

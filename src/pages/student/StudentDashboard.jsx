@@ -53,7 +53,7 @@ export default function StudentDashboard() {
             {status === 'loading' ? <div className="qz-class-grid qz-class-grid--preview" role="status" aria-label="Memuat kelas"><Skeleton height={215} /><Skeleton height={215} /></div> : status === 'error' ? <div className="qz-inline-state qz-inline-state--error" role="alert">{classErrorMessage(error)} <Button variant="ghost" size="sm" onClick={reload}>Coba lagi</Button></div> : classes.length ? <div className="qz-class-grid qz-class-grid--preview">{classes.slice(0, 4).map((item) => <ClassCard key={item.id} classItem={item} role="student" />)}</div> : <Card className="qz-class-empty"><EmptyState icon={ClassesIcon} title={configured ? 'Temukan kelas pertamamu' : 'Ruang kelas sedang disiapkan'} description={configured ? 'Minta kode dari guru dan bergabung bersama teman-temanmu.' : 'Layanan kelas belum tersedia. Kelasmu akan muncul di sini setelah terhubung.'} action={<Link to="/student/classes" className="qz-text-link">Buka halaman kelas <ArrowRightIcon size={17} /></Link>} /></Card>}
           </section>
         </div>
-        <div className="qz-home-rail"><WeekAgenda /><GettingStarted role="student" /></div>
+        <div className="qz-home-rail"><WeekAgenda role="student" /><GettingStarted role="student" /></div>
       </div>
     </div>
   );

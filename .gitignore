@@ -63,3 +63,4 @@ Thumbs.db
 *.md
 !docs/cloudflare-backend-migration-status.md
 !docs/nalaro-project-status.md
+!docs/nalaro-audit-2026-10-03.md

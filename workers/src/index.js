@@ -14,6 +14,7 @@ import { registerGeneralQuizRoutes } from './routes/general-quizzes.js';
 import { registerQuizBankRoutes } from './routes/quiz-bank.js';
 import { registerLiveQuizRoutes } from './routes/live-quizzes.js';
 import { registerLearningAnalyticsRoutes } from './routes/learning-analytics.js';
+import { registerAgendaRoutes } from './routes/agenda.js';
 
 const app = new Hono();
 
@@ -41,6 +42,7 @@ registerGeneralQuizRoutes(app);
 registerQuizBankRoutes(app);
 registerLiveQuizRoutes(app);
 registerLearningAnalyticsRoutes(app);
+registerAgendaRoutes(app);
 
 app.notFound((c) => json(c, 404, { error: { code: 'NOT_FOUND', message: 'Rute tidak ditemukan.' } }));
 app.onError((error, c) => errorResponse(c, error));

@@ -26,8 +26,8 @@ export async function deleteMaterial(classId, materialId) {
   await apiRequest(`${base(classId)}/${encodeURIComponent(materialId)}`, { method: 'DELETE' });
 }
 
-export async function saveProgress(classId, materialId, percent) {
-  const data = await apiRequest(`${base(classId)}/${encodeURIComponent(materialId)}/progress`, { method: 'PUT', body: { percent } });
+export async function saveProgress(classId, materialId, percent, { signal } = {}) {
+  const data = await apiRequest(`${base(classId)}/${encodeURIComponent(materialId)}/progress`, { method: 'PUT', body: { percent }, signal, keepalive: true });
   return data.progress;
 }
 
