@@ -20,6 +20,8 @@ Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus 
 
 ## Posisi saat ini
 
+**UI landing dan auth, 3 Oktober 2026:** desain editorial terang dengan ilustrasi buku, warna biru/sage/koral, alur scroll bertahap, contoh format kuis interaktif, serta catatan belajar fade pada auth selesai lokal. Logo/nama dipertahankan; handler auth, routing, layanan, dan backend tidak diubah. Lint/build, 26 tes frontend, dan 45 keadaan layout browser lokal 320/390/768/1024/1440 px lulus. Pengiriman ke `pages/main` dan verifikasi Pages sedang dilakukan; lihat entri UI di bawah.
+
 **Tahap: RELEASE CANDIDATE.** Bukti API/browser produksi 2 Oktober tetap historis; patch terbaru belum diterapkan oleh tugas audit ini. Gate Live perangkat fisik, kamera/GPS, dan kapasitas masih terbuka. Audit source, bundle publik, dan perbaikan progres/agenda 3 Oktober ada di [laporan audit](nalaro-audit-2026-10-03.md); masih ada gap kuis, UX grading, dan benchmark Insights. Rincian release lama dan rollback ada di [laporan release Oktober](production-release-2026-10.md).
 
 Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terlihat pada commit lokal `f4d95d4`. Pembaruan UX rekam/presensi wajah otomatis dan card kini terlihat pada commit lokal `bbe0c95`; keberadaan commit diverifikasi pada audit 3 Oktober, tetapi push/deploy commit itu tidak diverifikasi ulang. Bukti tugas UX sebelumnya: lint/build, 19 tes frontend, dan browser sintetis lulus. Patch progres/agenda saat ini berada di working tree di atas `bbe0c95`, belum commit/push/deploy. Audit baru lulus lint/build, 26 tes frontend, 126 tes kompatibilitas backend legacy, 66 tes Worker/D1, syntax checks, dan browser materi/agenda lokal sintetis 320/1440 px. D1 fixture sampai `0014`; status migrasi remote, Firebase nyata, API terautentikasi, model/kamera/GPS nyata, dan perangkat fisik tidak diverifikasi ulang. Bukti release 2 Oktober tidak memverifikasi patch terbaru.
@@ -66,6 +68,13 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 
 ## Pekerjaan tersisa
 
+### UI landing dan auth 3 Oktober
+
+- [x] Desain responsif, copy ringkas, ilustrasi lokal, fade catatan belajar, kontrol jeda/reduced motion, akses keyboard, dan contoh empat format soal.
+- [x] Browser lokal dengan auth sintetis: 45 keadaan layout pada lima viewport; Google/email/daftar untuk guru dan siswa; tamu; role mismatch; validasi konfirmasi; pemulihan error Google. Tidak ada runtime error.
+- [ ] Push perubahan UI ke `pages/main`, pastikan deployment produksi selesai, lalu periksa halaman publik di Pages.
+- [ ] Login Google/Firebase nyata dan perangkat fisik belum diuji ulang oleh tugas UI ini.
+
 ### Gate cutover dan beta
 
 - [x] Kedua repository disinkronkan; source/variabel build Pages cocok dengan Worker; deployment Pages sukses.
@@ -110,6 +119,15 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 - HTTP/CORS dan tes otomatis tidak menggantikan uji UI browser, transfer Cloudinary nyata, perangkat kamera/lokasi, atau uji beban live.
 
 ## Riwayat perubahan
+
+### 3 Okt 2026 - Rombak UI landing dan auth
+
+- Ruang lingkup hanya UI/UX publik. Hero memakai tipografi editorial dan ilustrasi buku SVG lokal; narasi belajar memakai kolom sticky desktop, lembar berwarna, reveal saat scroll, daftar fitur, dan contoh format soal yang dapat dipilih. Mobile memakai alur vertikal.
+- Auth memakai pemilih Guru/Siswa ringkas, Google mark, form yang tetap utama, dan tiga catatan belajar orisinal berganti fade. Tidak memakai testimoni atau angka pengguna rekaan. Kontrol jeda dan reduced motion tersedia. Login, register, tamu, pemeriksaan peran dan semua handler auth tetap identik dengan source sebelum perubahan.
+- Berkas: `src/pages/Landing.jsx`, `src/pages/Auth.jsx`, `src/components/LearningArtwork.jsx`, `src/styles/landing.css`, `workers/scripts/smoke-public-ui.mjs`. Styles terbatas pada halaman publik; tidak ada perubahan konfigurasi, dependensi, API, Worker, D1, atau route.
+- Validasi: `npm.cmd run lint`, `npm.cmd run build`, 26 tes `npm.cmd run test:frontend`, `node --check workers/scripts/smoke-public-ui.mjs`, dan `git diff --check` lulus. Smoke browser Chrome headless lokal lulus 45 keadaan layout pada 320/390/768/1024/1440 px, enam kombinasi metode/peran auth, tamu, penolakan role mismatch, konfirmasi tidak sama, pemulihan gagal Google, fade/pause, reduced motion dan skip link keyboard. Perbandingan source membuktikan handler tidak berubah. Screenshot desktop/mobile ditinjau; reveal scroll normal juga diperiksa. Artefak ada di `workers/.wrangler/public-ui-artifacts/` (ignored).
+- Batas: layanan auth disimulasikan untuk smoke lokal; belum menguji login Firebase/Google nyata atau perangkat fisik. Build masih melaporkan peringatan chunk besar yang sudah ada pada dependensi aplikasi.
+- Pengiriman: disiapkan untuk commit dan push hanya ke remote `pages` sesuai permintaan pengguna. Hasil deployment akan dicatat setelah push. Perubahan dokumen status yang sudah ada sebelum tugas dipertahankan terpisah di working tree.
 
 ### 3 Okt 2026 - Audit Cloudflare, progres materi otomatis dan agenda nyata
 

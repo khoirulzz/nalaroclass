@@ -1,56 +1,78 @@
-import { ArrowRight, BookOpen, Check, ChevronRight, Gamepad2, MessageSquare, UserCheck } from 'lucide-react';
+﻿import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, MessageCircle, Pause, Play } from 'lucide-react';
 import Brand from '../components/Brand';
+import LearningArtwork from '../components/LearningArtwork';
 import '../styles/landing.css';
 
-const pillars = [
-  { number: '01', icon: BookOpen, title: 'Ruang Materi', desc: 'Teks, gambar, lampiran, dan video dalam satu halaman materi yang terstruktur.' },
-  { number: '02', icon: MessageSquare, title: 'Diskusi Kelas', desc: 'Diskusi melekat langsung di setiap materi — siswa bisa bertanya kapan saja.' },
-  { number: '03', icon: Gamepad2, title: 'Kuis Interaktif', desc: 'Sesi evaluasi bersama atau mandiri dengan umpan balik langsung.' },
-  { number: '04', icon: UserCheck, title: 'Presensi', desc: 'Catat kehadiran per sesi kelas dengan riwayat yang mudah diakses.' },
+const formats = [
+  { title: 'Pilihan ganda', question: 'Kenapa langit terlihat biru?', kind: 'choice' },
+  { title: 'Hotspot gambar', question: 'Di mana letak inti sel?', kind: 'hotspot' },
+  { title: 'Susun urutan', question: 'Dari benih, lalu jadi apa?', kind: 'order' },
+  { title: 'Pilihan gambar', question: 'Mana yang punya tiga sisi?', kind: 'image' },
 ];
 
-const capabilities = [
-  { title: 'Nalaro Assist', desc: 'Bantu guru menyiapkan rangkuman materi dan daftar soal kuis.' },
-  { title: 'Kuis Live & Mandiri', desc: 'Ikuti sesi bersama via PIN atau kerjakan evaluasi di waktu sendiri.' },
-  { title: 'Kontrol Sesi', desc: 'Guru kendalikan timer, kunci jawaban, dan tampilkan hasil kapan saja.' },
-  { title: 'Kode Kelas & PIN', desc: 'Bergabung ke kelas atau sesi kuis hanya dengan satu kode pendek.' },
-];
+function Reveal({ children, className = '', ...props }) {
+  const reduced = useReducedMotion();
+  return <motion.div className={className} initial={reduced ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: 0.65 }} {...props}>{children}</motion.div>;
+}
 
-const questionTypes = [
-  { number: '01', title: 'Pilihan Ganda', desc: 'Format klasik, cepat, dan familiar.' },
-  { number: '02', title: 'Hotspot Gambar', desc: 'Ketuk titik koordinat jawaban di gambar.' },
-  { number: '03', title: 'Susun Urutan', desc: 'Urutkan item sesuai logika soal.' },
-  { number: '04', title: 'Pilihan Gambar', desc: 'Pilih jawaban dalam bentuk visual.' },
-];
-
-function ProductPreview() {
-  return (
-    <div className="nlr-preview" aria-label="Ilustrasi ruang kelas Nalaro Class">
-      <div className="nlr-preview__bar"><Brand compact /><span>Ruang guru <ChevronRight size={14} /> Kelas XI IPA</span></div>
-      <div className="nlr-preview__body">
-        <div className="nlr-preview__intro"><span>Matematika · XI IPA</span><h2>Belajar bersama, selangkah demi selangkah.</h2><p>Semua yang dibutuhkan kelasmu, ada di satu tempat.</p></div>
-        <div className="nlr-preview__grid">
-          <div className="nlr-preview__lesson"><div className="nlr-preview__eyebrow">MATERI KELAS <span>01 / 04</span></div><div className="nlr-preview__lesson-art"><div className="nlr-preview__shape nlr-preview__shape-a" /><div className="nlr-preview__shape nlr-preview__shape-b" /><div className="nlr-preview__shape nlr-preview__shape-c" /></div><strong>Memahami fungsi kuadrat</strong><p>Mulai dari konsep dasar sampai penerapannya.</p><span className="nlr-preview__link">Buka materi <ArrowRight size={15} /></span></div>
-          <div className="nlr-preview__right"><div className="nlr-preview__quiz"><div className="nlr-preview__eyebrow">KUIS KELAS <Gamepad2 size={17} /></div><strong>Siap menguji pemahaman?</strong><p>Belajar jadi lebih seru saat dicoba bersama.</p><span>Mulai kuis <ArrowRight size={15} /></span></div><div className="nlr-preview__small"><MessageSquare size={19} /><div><strong>Diskusi kelas</strong><p>Pertanyaan dan ide punya tempatnya.</p></div></div><div className="nlr-preview__small"><UserCheck size={19} /><div><strong>Presensi</strong><p>Kehadiran tercatat dengan rapi.</p></div></div></div>
-        </div>
-      </div>
-    </div>
-  );
+function QuizPreview({ format }) {
+  return <div className="nlr-quiz-paper" aria-live="polite" aria-atomic="true">
+    <div className="nlr-paper-meta"><span>COBA BAYANGKAN</span><span>0{format + 1} / 04</span></div>
+    <h3>{formats[format].question}</h3>
+    {format === 0 && <div className="nlr-demo-choices"><span><b>A</b> Warna laut terpantul ke langit</span><span className="is-answer"><b>B</b> Cahaya biru lebih banyak tersebar <Check size={18} /></span><span><b>C</b> Awan memberi warna biru</span></div>}
+    {format === 1 && <div className="nlr-demo-cell" aria-label="Ilustrasi sel dengan inti di tengah"><i /><span>Inti sel<ArrowDown size={20} /></span></div>}
+    {format === 2 && <div className="nlr-demo-order"><span>01<b>Benih</b><i>·</i></span><ArrowRight /><span>02<b>Tunas</b><i>ʏ</i></span><ArrowRight /><span>03<b>Tanaman</b><i>♧</i></span></div>}
+    {format === 3 && <div className="nlr-demo-shapes" aria-label="Lingkaran, segitiga, dan persegi"><i /><i /><i /></div>}
+    <div className="nlr-paper-bottom"><span>Contoh tampilan soal</span><BookOpen size={18} /></div>
+  </div>;
 }
 
 export default function Landing({ onEnterApp }) {
+  const [format, setFormat] = useState(0);
+  const [paused, setPaused] = useState(false);
   return (
-    <div className="nlr-landing">
-      <header className="nlr-site-header"><div className="nlr-wrap nlr-site-header__inner"><a href="#atas" aria-label="Nalaro Class, ke awal"><Brand /></a><nav aria-label="Navigasi halaman"><a href="#platform">Platform</a><a href="#fitur">Fitur</a><a href="#soal">Tipe soal</a></nav><button type="button" className="nlr-header-login" onClick={onEnterApp}>Masuk <ArrowRight size={17} /></button></div></header>
-      <main>
-        <section className="nlr-hero nlr-wrap" id="atas"><div className="nlr-hero__copy"><h1>Belajar, bermain,<br /><em>dan tumbuh.</em></h1><p>Nalaro menyatukan materi, diskusi, kuis interaktif, dan presensi dalam satu ruang kelas digital. Ringan dipakai, mudah diatur.</p><div className="nlr-hero__actions"><button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Mulai sekarang <ArrowRight size={18} /></button><a className="nlr-action nlr-action--text" href="#platform">Lihat cara kerjanya <ArrowRight size={18} /></a></div></div><div className="nlr-hero__preview"><div className="nlr-hero__halo" aria-hidden="true" /><ProductPreview /><div className="nlr-hero__float nlr-hero__float--top"><span><b>Lebih terarah</b><small>Materi sampai evaluasi</small></span></div><div className="nlr-hero__float nlr-hero__float--bottom"><span><b>Lebih aktif</b><small>Belajar sambil mencoba</small></span></div></div></section>
-        <div className="nlr-marquee-line"><div className="nlr-wrap"><p>Satu tempat untuk menyiapkan materi, menghidupkan diskusi, dan melihat perkembangan belajar.</p><span>GURU <span aria-hidden="true">&</span> SISWA</span></div></div>
-        <section className="nlr-section nlr-wrap" id="platform"><div className="nlr-section__heading"><span className="nlr-section__index">01 / PLATFORM</span><div><h2>Satu platform,<br /><em>empat ruang.</em></h2><p>Nalaro dibangun di atas empat pilar yang saling terhubung, bukan alat terpisah yang perlu berpindah-pindah.</p></div></div><div className="nlr-pillar-list">{pillars.map(({ number, icon: Icon, title, desc }) => <article key={title} className="nlr-pillar"><span className="nlr-pillar__number">{number}</span><span className="nlr-pillar__icon"><Icon size={22} strokeWidth={1.8} aria-hidden="true" /></span><div><h3>{title}</h3><p>{desc}</p></div><ArrowRight className="nlr-pillar__arrow" size={20} aria-hidden="true" /></article>)}</div></section>
-        <section className="nlr-feature-section" id="fitur"><div className="nlr-wrap nlr-feature-section__inner"><div className="nlr-feature-section__intro"><span className="nlr-section__index">02 / KEMAMPUAN</span><h2>Dibuat untuk guru<br />dan siswa yang <em>ingin terus maju.</em></h2><p>Setiap fitur dirancang agar guru bisa mengajar lebih fokus dan siswa bisa belajar lebih aktif.</p><button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Buka ruang belajar <ArrowRight size={18} /></button></div><div className="nlr-feature-list">{capabilities.map(({ title, desc }, index) => <article key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{desc}</p></div><Check size={18} aria-hidden="true" /></article>)}</div></div></section>
-        <section className="nlr-section nlr-wrap nlr-question-section" id="soal"><div className="nlr-section__heading"><span className="nlr-section__index">03 / FORMAT SOAL</span><div><h2>Variasi soal yang<br /><em>lebih dari pilihan ganda.</em></h2><p>Nalaro mendukung berbagai format evaluasi agar pengalaman belajar tidak terasa monoton.</p></div></div><div className="nlr-question-list">{questionTypes.map(({ number, title, desc }) => <article key={title}><span>{number}</span><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
-        <section className="nlr-cta"><div className="nlr-wrap nlr-cta__inner"><div><p>LANGKAH PERTAMA</p><h2>Siap mulai kelas pertama?</h2><span>Daftar gratis dan buat kelas dalam hitungan menit.</span></div><button type="button" onClick={onEnterApp}>Buka Nalaro Class <ArrowRight size={19} /></button></div></section>
+    <div className={`nlr-landing${paused ? ' nlr-motion-paused' : ''}`}>
+      <a className="nlr-skip" href="#isi">Lewati navigasi</a>
+      <header className="nlr-site-header"><div className="nlr-wrap nlr-site-header__inner">
+        <a href="#atas" aria-label="Nalaro Class, ke awal"><Brand /></a>
+        <nav aria-label="Navigasi halaman"><a href="#platform">Ruang belajar</a><a href="#soal">Jelajahi kuis</a></nav>
+        <button type="button" className="nlr-header-login" onClick={onEnterApp}>Masuk <ArrowUpRight size={18} /></button>
+      </div></header>
+      <main id="isi">
+        <section className="nlr-hero nlr-wrap" id="atas">
+          <div className="nlr-hero__copy">
+            <h1>Berawal dari<br />rasa <em>ingin tahu.</em></h1>
+            <p>Ada pertanyaan, ada penemuan. Ada tempat untuk keduanya di kelasmu.</p>
+            <button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Masuk ke Nalaro <ArrowUpRight size={21} /></button>
+            <a className="nlr-hero__scroll" href="#platform"><span><ArrowDown size={18} /></span>Kenali ruang belajarmu</a>
+          </div>
+          <div className="nlr-hero__art"><LearningArtwork /><span className="nlr-art-note">Ide besar boleh dimulai<br />dari pertanyaan kecil.</span></div>
+          <div className="nlr-hero__foot"><span>Untuk yang mengajar. Untuk yang ingin belajar.</span><button className="nlr-motion-control" type="button" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={14} /> : <Pause size={14} />}{paused ? 'Putar animasi' : 'Jeda animasi'}</button></div>
+        </section>
+        <div className="nlr-word-strip" aria-hidden="true"><span>bertanya</span><i>↗</i><span>mencoba</span><i>✳</i><span>memahami</span><i>↗</i><span>bertumbuh</span><i>✳</i></div>
+        <section className="nlr-journey nlr-wrap" id="platform" aria-labelledby="journey-title">
+          <div className="nlr-journey__intro"><span className="nlr-margin-note">Di dalam kelasmu</span><h2 id="journey-title">Pelajaran<br />boleh usai.<br /><em>Penemuan<br />jalan terus.</em></h2><p>Dari materi pertama sampai momen “oh, begitu!”, semuanya punya tempat.</p><a href="#fitur" className="nlr-inline-link">Lihat yang bisa kamu lakukan <ArrowDown size={18} /></a></div>
+          <div className="nlr-journey__pages">
+            <Reveal className="nlr-chapter nlr-chapter--blue"><div className="nlr-chapter__top"><span>01 / BUKA WAWASAN</span><BookOpen size={21} /></div><div className="nlr-lesson-art" aria-hidden="true"><div className="nlr-orbit"><i /><i /><i /></div><span>Setiap hal<br />punya cerita.</span></div><h3>Bukan sekadar<br />baca lalu selesai.</h3><p>Materi, video, dan catatan ada di satu tempat. Buka lagi kapan pun kamu membutuhkannya.</p></Reveal>
+            <Reveal className="nlr-chapter nlr-chapter--peach"><div className="nlr-chapter__top"><span>02 / TANYA SAJA</span><MessageCircle size={21} /></div><div className="nlr-conversation" aria-hidden="true"><span>“Kalau caranya dibalik,<br />hasilnya sama nggak?”</span><span>“Menarik. Yuk, kita coba.”<i>↗</i></span></div><h3>Pertanyaan bagus<br />butuh ruang.</h3><p>Lanjutkan obrolan langsung di materi. Guru dan teman sekelas bisa ikut menanggapi.</p></Reveal>
+            <Reveal className="nlr-chapter nlr-chapter--yellow"><div className="nlr-chapter__top"><span>03 / BERANI MENCOBA</span><ArrowUpRight size={23} /></div><div className="nlr-score-art" aria-hidden="true"><span>coba.</span><span>pahami.</span><span>coba lagi.<i>✳</i></span></div><h3>Belum tepat?<br />Belum selesai.</h3><p>Uji pemahaman lewat kuis mandiri atau main bersama di Nalaro Live. Lihat hasilnya, temukan yang bisa dipelajari lagi.</p></Reveal>
+          </div>
+        </section>
+        <section className="nlr-classroom" id="fitur"><div className="nlr-wrap">
+          <Reveal className="nlr-classroom__heading"><h2>Kamu urus<br /><em>serunya belajar.</em></h2><p>Nalaro bantu merapikan sisanya.</p></Reveal>
+          <div className="nlr-classroom__rows">
+            {[['01', 'Kelas punya rumah.', 'Bagikan kode kelas. Materi, tugas, dan pertemuan tersimpan bersama.'], ['02', 'Yang hadir, tercatat.', 'Buka presensi per sesi dan lihat kembali riwayat kehadiran.'], ['03', 'Persiapan lebih ringan.', 'Susun draf materi dan soal dengan Nalaro Assist. Kamu tetap yang meninjau.'], ['04', 'Saatnya main bersama.', 'Bagikan PIN Nalaro Live, atur waktu, lalu lihat hasil kuis kelasmu.']].map(([n, title, copy]) => <Reveal key={n} className="nlr-classroom__row"><span>{n}</span><h3>{title}</h3><p>{copy}</p><ArrowUpRight aria-hidden="true" size={22} /></Reveal>)}
+          </div>
+        </div></section>
+        <section className="nlr-quiz-section nlr-wrap" id="soal" aria-labelledby="quiz-title">
+          <Reveal className="nlr-quiz-intro"><span className="nlr-margin-note">Banyak cara untuk mencoba</span><h2 id="quiz-title">Jawaban bisa<br />punya banyak<br /><em>bentuk.</em></h2><p>Pilih formatnya. Beri rasa baru di setiap kuis.</p><div className="nlr-format-list" role="group" aria-label="Contoh format soal">{formats.map((item, index) => <button type="button" key={item.kind} aria-pressed={format === index} onClick={() => setFormat(index)}><span>0{index + 1}</span>{item.title}<ArrowUpRight size={19} /></button>)}</div></Reveal>
+          <Reveal className="nlr-quiz-stage"><div className="nlr-quiz-sun" aria-hidden="true">✳</div><QuizPreview format={format} /><span className="nlr-handwritten">Satu pertanyaan,<br />banyak jalan berpikir.</span></Reveal>
+        </section>
+        <section className="nlr-cta"><div className="nlr-wrap nlr-cta__inner"><span className="nlr-cta__asterisk" aria-hidden="true">✳</span><Reveal><h2>Besok belajar apa?<br /><em>Mulai dari sini.</em></h2><button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Buka ruang belajarmu <ArrowUpRight size={22} /></button></Reveal><span className="nlr-cta__scribble" aria-hidden="true">↗</span></div></section>
       </main>
-      <footer className="nlr-footer"><div className="nlr-wrap nlr-footer__inner"><Brand /><p>Belajar, bermain, dan tumbuh.</p><span>© {new Date().getFullYear()} Nalaro Class</span></div></footer>
+      <footer className="nlr-footer"><div className="nlr-wrap nlr-footer__inner"><a href="#atas" aria-label="Nalaro Class, ke awal"><Brand /></a><p>Ruang untuk rasa ingin tahu.</p><span>© {new Date().getFullYear()} Nalaro Class</span></div></footer>
     </div>
   );
 }
