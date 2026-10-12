@@ -13,6 +13,7 @@ function publicClass(row, extra = {}) {
     code: row.code,
     name: row.name,
     description: row.description || '',
+    themeId: row.theme_id || 'classic',
     teacherName: row.teacher_name || '',
     status: row.status,
     studentsCount: Number(row.students_count || 0),
@@ -52,19 +53,19 @@ export class ClassRepository {
     ).run();
   }
 
-  async create({ ownerId, teacherName, name, description, now = new Date().toISOString() }) {
+  async create({ ownerId, teacherName, name, description, themeId = 'classic', now = new Date().toISOString() }) {
     await this.ensureUser({ id: ownerId, name: teacherName, role: 'teacher', now });
     for (let attempt = 0; attempt < 4; attempt += 1) {
       const row = {
-        id: crypto.randomUUID(), code: createClassCode(), ownerId, teacherName, name, description, now,
+        id: crypto.randomUUID(), code: createClassCode(), ownerId, teacherName, name, description, themeId, now,
       };
       try {
         await this.db.prepare(`INSERT INTO classes (
-          id, code, owner_id, teacher_name, name, description, status, students_count, materials_count, quizzes_count, created_at, updated_at
-        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'active', 0, 0, 0, ?7, ?7)`).bind(
-          row.id, row.code, row.ownerId, row.teacherName, row.name, row.description, row.now,
+          id, code, owner_id, teacher_name, name, description, theme_id, status, students_count, materials_count, quizzes_count, created_at, updated_at
+        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?8, 'active', 0, 0, 0, ?7, ?7)`).bind(
+          row.id, row.code, row.ownerId, row.teacherName, row.name, row.description, row.now, row.themeId,
         ).run();
-        return publicClass({ ...row, teacher_name: row.teacherName, created_at: now, updated_at: now, status: 'active' });
+        return publicClass({ ...row, teacher_name: row.teacherName, theme_id: row.themeId, created_at: now, updated_at: now, status: 'active' });
       } catch (error) {
         if (!/unique|constraint/i.test(String(error?.message || ''))) throw error;
       }
@@ -96,6 +97,14 @@ export class ClassRepository {
     const membership = await this.db.prepare('SELECT joined_at FROM class_members WHERE class_id = ?1 AND user_id = ?2').bind(classId, uid).first();
     if (!membership) throw forbidden('Anda bukan anggota kelas ini.');
     return publicClass(classItem, { accessRole: 'member', joinedAt: membership.joined_at });
+  }
+
+  async updateTheme(classId, ownerId, themeId) {
+    const existing = await this.db.prepare('SELECT owner_id FROM classes WHERE id = ?1').bind(classId).first();
+    if (!existing) throw notFound('Kelas tidak ditemukan.');
+    if (existing.owner_id !== ownerId) throw forbidden('Hanya pemilik kelas yang dapat mengubah tema.');
+    await this.db.prepare('UPDATE classes SET theme_id = ?1, updated_at = ?2 WHERE id = ?3').bind(themeId, new Date().toISOString(), classId).run();
+    return this.getForUser(classId, ownerId);
   }
 
   async listMembers(classId, ownerId) {
