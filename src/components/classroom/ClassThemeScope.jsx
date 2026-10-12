@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getClass } from '../../services/class.service';
 import { classThemeClass, getClassTheme } from '../../features/classes/classThemes';
 import '../../styles/class-themes.css';
 
@@ -13,7 +12,8 @@ export default function ClassThemeScope({ children }) {
   useEffect(() => {
     if (!classId) return;
     const controller = new AbortController();
-    getClass(classId, { signal: controller.signal }).then((item) => {
+    // Load auth-dependent API code only after entering an authenticated class route.
+    import('../../services/class.service').then(({ getClass }) => getClass(classId, { signal: controller.signal })).then((item) => {
       if (!controller.signal.aborted) setState({ classId, themeId: item.themeId });
     }).catch(() => { if (!controller.signal.aborted) setState({ classId, themeId: null }); });
     return () => controller.abort();
