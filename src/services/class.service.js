@@ -1,5 +1,12 @@
 import { apiRequest } from './api';
 
+export async function supportsClassThemes() {
+  try {
+    const data = await apiRequest('/classes/capabilities');
+    return data?.themeSelection === true;
+  } catch { return false; } // Older deployed Workers must remain compatible.
+}
+
 export async function listClasses({ scope = 'owned', signal } = {}) {
   const data = await apiRequest(`/classes?scope=${encodeURIComponent(scope)}`, { signal });
   return data?.classes || [];
