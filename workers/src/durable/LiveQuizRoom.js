@@ -1,5 +1,6 @@
 import { publicArrangeItems } from '../services/public-question.js';
 import { conflict, forbidden, HttpError, notFound } from '../http/errors.js';
+import { logError } from '../http/response.js';
 import { persistLiveResultSnapshot } from '../repositories/live-result.repository.js';
 
 const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -351,7 +352,7 @@ export class LiveQuizRoom {
       this.save(state);
       return { status: 'persisted', ...result };
     } catch (error) {
-      console.error('Live persistence error', { name: error?.name, message: error?.message, sessionId: state.id });
+      logError('Live persistence error', { name: error?.name, errorMessage: error?.message, sessionId: state.id });
       state.persistenceStatus = 'failed';
       this.save(state);
       return { status: 'failed' };
@@ -490,7 +491,7 @@ export class LiveQuizRoom {
       return Response.json({ data: value }, { status: path === '/join' || path === '/initialize' ? 201 : 200 });
     } catch (error) {
       const known = error instanceof HttpError ? error : new HttpError(500, 'INTERNAL_ERROR', 'Ruang kuis sedang mengalami gangguan.');
-      if (!(error instanceof HttpError)) console.error('Live room error', { name: error?.name, message: error?.message });
+      if (!(error instanceof HttpError)) logError('Live room error', { name: error?.name, errorMessage: error?.message });
       return Response.json({ error: { code: known.code, message: known.message } }, { status: known.status });
     }
   }

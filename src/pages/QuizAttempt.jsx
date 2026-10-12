@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useAuth } from '../context/useAuth';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Card, Dialog, PageHeader, Progress, buttonClassName } from '../components/ui';
-import { initialiseArrangeAnswers } from '../features/quiz/runtime';
+import { useAuth } from '../context/useAuth';
+import { hasQuestionAnswer, initialiseArrangeAnswers, orderedQuestions } from '../features/quiz/runtime';
 import { getQuiz, getQuizResults, quizErrorMessage, submitQuiz } from '../services/quiz.service';
 
 const questionTypeLabel = {
@@ -16,6 +16,17 @@ const questionTypeLabel = {
 
 const draftKey = (userId, classId, quizId, version) => `nalaro.quiz.draft.${userId}.${classId}.${quizId}.${version || 'v1'}`;
 
+function shuffledIds(ids) {
+  const next = [...ids];
+  for (let index = next.length - 1; index > 0; index -= 1) {
+    const random = new Uint32Array(1);
+    crypto.getRandomValues(random);
+    const target = random[0] % (index + 1);
+    [next[index], next[target]] = [next[target], next[index]];
+  }
+  return next;
+}
+
 function ArrangeAnswer({ question, value, onChange }) {
   const [dragging, setDragging] = useState(null);
   const order = Array.isArray(value) ? value : [];
@@ -26,7 +37,29 @@ function ArrangeAnswer({ question, value, onChange }) {
     next.splice(to, 0, item);
     onChange(next);
   };
-  return <ol className="qz-arrange-answer">{order.map((id, index) => <li key={id} draggable onDragStart={() => setDragging(index)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); if (dragging !== null) move(dragging, index); setDragging(null); }}><span aria-hidden="true">⠿</span><strong>{items.get(id)?.text}</strong><button type="button" aria-label="Naik" disabled={index === 0} onClick={() => move(index, index - 1)}>↑</button><button type="button" aria-label="Turun" disabled={index === order.length - 1} onClick={() => move(index, index + 1)}>↓</button></li>)}</ol>;
+
+  return (
+    <ol className="qz-arrange-answer">
+      {order.map((id, index) => (
+        <li
+          key={id}
+          draggable
+          onDragStart={() => setDragging(index)}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (dragging !== null) move(dragging, index);
+            setDragging(null);
+          }}
+        >
+          <span aria-hidden="true">::</span>
+          <strong>{items.get(id)?.text}</strong>
+          <button type="button" aria-label="Naik" disabled={index === 0} onClick={() => move(index, index - 1)}>Naik</button>
+          <button type="button" aria-label="Turun" disabled={index === order.length - 1} onClick={() => move(index, index + 1)}>Turun</button>
+        </li>
+      ))}
+    </ol>
+  );
 }
 
 function HotspotAnswer({ question, value, onChange }) {
@@ -37,26 +70,67 @@ function HotspotAnswer({ question, value, onChange }) {
       y: Math.max(0, Math.min(100, ((event.clientY - box.top) / box.height) * 100)),
     });
   };
-  return <div className="qz-hotspot-answer qz-hotspot-answer--interactive" onClick={choose}><img src={question.imageUrl} alt="Gambar untuk dijawab" /><span className="qz-hotspot-answer__hint">Klik titik yang menurutmu paling tepat</span>{value && typeof value === 'object' ? <i style={{ left: `${value.x}%`, top: `${value.y}%` }} /> : null}</div>;
+
+  return (
+    <div className="qz-hotspot-answer qz-hotspot-answer--interactive" onClick={choose}>
+      <img src={question.imageUrl} alt="Gambar untuk dijawab" />
+      <span className="qz-hotspot-answer__hint">Klik titik yang menurutmu paling tepat</span>
+      {value && typeof value === 'object' ? <i style={{ left: `${value.x}%`, top: `${value.y}%` }} /> : null}
+    </div>
+  );
 }
 
 function AnswerInput({ question, value, onChange }) {
-  if (question.type === 'multiple_choice') return <div className="qz-choice-list qz-choice-list--interactive">{question.choices.map((choice, index) => <motion.button whileTap={{ scale: 0.98 }} type="button" key={choice} className={value === choice ? 'is-selected' : ''} aria-pressed={value === choice} onClick={() => onChange(choice)}><i>{String.fromCharCode(65 + index)}</i><span>{choice}</span><kbd>{index + 1}</kbd></motion.button>)}</div>;
+  if (question.type === 'multiple_choice') {
+    return (
+      <div className="qz-choice-list qz-choice-list--interactive">
+        {question.choices.map((choice, index) => (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            key={choice}
+            className={value === choice ? 'is-selected' : ''}
+            aria-pressed={value === choice}
+            onClick={() => onChange(choice)}
+          >
+            <i>{String.fromCharCode(65 + index)}</i>
+            <span>{choice}</span>
+            <kbd>{index + 1}</kbd>
+          </motion.button>
+        ))}
+      </div>
+    );
+  }
+
   if (question.type === 'true_false') {
     const choices = [{ label: 'Benar', value: true }, { label: 'Salah', value: false }];
-    return <div className="qz-choice-list qz-choice-list--interactive">{choices.map((choice, index) => <motion.button whileTap={{ scale: 0.98 }} type="button" key={choice.label} className={value === choice.value ? 'is-selected' : ''} aria-pressed={value === choice.value} onClick={() => onChange(choice.value)}><i>{index + 1}</i><span>{choice.label}</span><kbd>{index + 1}</kbd></motion.button>)}</div>;
+    return (
+      <div className="qz-choice-list qz-choice-list--interactive">
+        {choices.map((choice, index) => (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            key={choice.label}
+            className={value === choice.value ? 'is-selected' : ''}
+            aria-pressed={value === choice.value}
+            onClick={() => onChange(choice.value)}
+          >
+            <i>{index + 1}</i>
+            <span>{choice.label}</span>
+            <kbd>{index + 1}</kbd>
+          </motion.button>
+        ))}
+      </div>
+    );
   }
+
   if (question.type === 'arrange') return <ArrangeAnswer question={question} value={value} onChange={onChange} />;
   if (question.type === 'image_hotspot') return <HotspotAnswer question={question} value={value} onChange={onChange} />;
   return <input className="qz-answer-input qz-answer-input--focus" value={value || ''} onChange={(event) => onChange(event.target.value)} placeholder="Tulis jawabanmu di sini..." />;
 }
 
-function answered(value) {
-  return Array.isArray(value) ? value.length > 0 : value && typeof value === 'object' ? true : value !== '' && value !== undefined && value !== null;
-}
-
 function resultAnswer(value) {
-  if (Array.isArray(value)) return value.join(' → ');
+  if (Array.isArray(value)) return value.join(' -> ');
   if (value && typeof value === 'object') return 'Titik pada gambar';
   return String(value) || 'Tidak dijawab';
 }
@@ -71,6 +145,8 @@ function QuizAttemptContent({ userId }) {
   const [busy, setBusy] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [draftReady, setDraftReady] = useState(false);
+  const [questionOrder, setQuestionOrder] = useState([]);
+  const [touchedQuestions, setTouchedQuestions] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -78,6 +154,7 @@ function QuizAttemptContent({ userId }) {
       if (caught?.status === 404) return null;
       throw caught;
     });
+
     Promise.all([getQuiz(classId, quizId, { signal: controller.signal }), existingResult])
       .then(([item, previousResult]) => {
         setQuiz(item);
@@ -85,43 +162,65 @@ function QuizAttemptContent({ userId }) {
       })
       .catch((caught) => { if (caught.name !== 'AbortError') setError(quizErrorMessage(caught)); })
       .finally(() => setBusy(false));
+
     return () => controller.abort();
   }, [classId, quizId]);
 
   const questions = useMemo(() => {
-    if (!quiz) return [];
-    const items = [...quiz.questions];
-    if (!quiz.settings?.shuffleQuestions) return items;
-    for (let index = items.length - 1; index > 0; index -= 1) {
-      const random = new Uint32Array(1);
-      crypto.getRandomValues(random);
-      const target = random[0] % (index + 1);
-      [items[index], items[target]] = [items[target], items[index]];
-    }
-    return items;
-  }, [quiz]);
+    if (!quiz || !draftReady) return [];
+    return orderedQuestions(quiz.questions, questionOrder);
+  }, [draftReady, questionOrder, quiz]);
 
   useEffect(() => {
-    if (!quiz || !questions.length || result || draftReady) return;
+    if (!quiz || !quiz.questions?.length || result || draftReady) return;
     let saved = null;
     try { saved = JSON.parse(sessionStorage.getItem(draftKey(userId, classId, quizId, quiz.updatedAt)) || 'null'); } catch { saved = null; }
-    const prepared = initialiseArrangeAnswers(questions, saved?.answers || {});
-    setAnswers(prepared);
-    const savedIndex = questions.findIndex((question) => question.id === saved?.activeQuestionId);
+
+    const savedOrder = Array.isArray(saved?.questionOrder) ? saved.questionOrder : [];
+    const nextOrder = savedOrder.length
+      ? savedOrder
+      : quiz.settings?.shuffleQuestions
+        ? shuffledIds(quiz.questions.map((question) => question.id))
+        : quiz.questions.map((question) => question.id);
+    const nextQuestions = orderedQuestions(quiz.questions, nextOrder);
+
+    setQuestionOrder(nextQuestions.map((question) => question.id));
+    setAnswers(initialiseArrangeAnswers(nextQuestions, saved?.answers || {}));
+    setTouchedQuestions(Object.fromEntries((saved?.touchedQuestionIds || []).map((id) => [id, true])));
+
+    const savedIndex = nextQuestions.findIndex((question) => question.id === saved?.activeQuestionId);
     if (savedIndex >= 0) setActiveIndex(savedIndex);
     setDraftReady(true);
-  }, [classId, draftReady, questions, quiz, quizId, result, userId]);
+  }, [classId, draftReady, quiz, quizId, result, userId]);
 
   useEffect(() => {
     if (!quiz || !draftReady || result || !questions.length) return;
     const activeQuestionId = questions[activeIndex]?.id || questions[0]?.id;
-    try { sessionStorage.setItem(draftKey(userId, classId, quizId, quiz.updatedAt), JSON.stringify({ answers, activeQuestionId, savedAt: new Date().toISOString() })); } catch { /* Answer state remains usable when browser storage is full. */ }
-  }, [activeIndex, answers, classId, draftReady, questions, quiz, quizId, result, userId]);
+    try {
+      sessionStorage.setItem(draftKey(userId, classId, quizId, quiz.updatedAt), JSON.stringify({
+        answers,
+        activeQuestionId,
+        questionOrder: questions.map((question) => question.id),
+        touchedQuestionIds: Object.keys(touchedQuestions).filter((id) => touchedQuestions[id]),
+        savedAt: new Date().toISOString(),
+      }));
+    } catch {
+      // Answer state remains usable when browser storage is full.
+    }
+  }, [activeIndex, answers, classId, draftReady, questions, quiz, quizId, result, touchedQuestions, userId]);
 
   const activeQuestion = questions[activeIndex];
-  const answeredCount = questions.filter((question) => answered(answers[question.id])).length;
+  const isAnswered = useCallback(
+    (question) => hasQuestionAnswer(question, answers[question.id], touchedQuestions[question.id]),
+    [answers, touchedQuestions],
+  );
+  const answeredCount = questions.filter(isAnswered).length;
   const remainingCount = Math.max(0, questions.length - answeredCount);
-  const setAnswer = useCallback((value) => { if (activeQuestion) setAnswers((current) => ({ ...current, [activeQuestion.id]: value })); }, [activeQuestion]);
+  const setAnswer = useCallback((value) => {
+    if (!activeQuestion) return;
+    setTouchedQuestions((current) => ({ ...current, [activeQuestion.id]: true }));
+    setAnswers((current) => ({ ...current, [activeQuestion.id]: value }));
+  }, [activeQuestion]);
 
   useEffect(() => {
     if (!activeQuestion || confirmOpen || result) return undefined;
@@ -145,17 +244,125 @@ function QuizAttemptContent({ userId }) {
     setBusy(true);
     setError('');
     try {
-      const nextResult = await submitQuiz(classId, quizId, questions.map((question) => ({ questionId: question.id, answer: answers[question.id] ?? '' })));
+      const nextResult = await submitQuiz(classId, quizId, questions.map((question) => ({
+        questionId: question.id,
+        answer: isAnswered(question) ? answers[question.id] : '',
+      })));
       setResult(nextResult);
       try { sessionStorage.removeItem(draftKey(userId, classId, quizId, quiz.updatedAt)); } catch { /* Result is already saved on the server. */ }
     } catch (caught) {
       setError(quizErrorMessage(caught));
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   };
 
-  if (result) return <div className="qz-dashboard qz-enter"><PageHeader eyebrow="Hasil kuis" title={quiz?.title || 'Hasil kuis'} description="Jawabanmu sudah dinilai oleh Nalaro Class." /><motion.div initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 180, damping: 20 }}><Card className={`qz-quiz-score qz-quiz-score--${result.passed ? 'passed' : 'retry'}`}><div className="qz-result-burst" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} />)}</div><span>{result.passed ? 'Target tercapai' : 'Hasil tersimpan'}</span><strong>{result.score}</strong><p>{result.passed ? 'Mantap! Kamu mencapai nilai kelulusan.' : 'Nilaimu belum mencapai batas kelulusan, tetapi hasilnya sudah tercatat.'}</p><small>{result.earnedPoints} dari {result.totalPoints} poin</small></Card></motion.div>{result.review?.map((item, index) => <motion.div key={item.questionId} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.04, 0.35) }}><Card className="qz-review"><span className="qz-eyebrow">SOAL {index + 1}</span><strong>{item.prompt}</strong><p><b>Jawabanmu:</b> {resultAnswer(item.answer)}</p><p><b>Jawaban benar:</b> {resultAnswer(item.correctAnswer)}</p>{item.explanation ? <small>{item.explanation}</small> : null}</Card></motion.div>)}<Link className={buttonClassName({ variant: 'secondary' })} to={`/student/classes/${classId}/quizzes`}>Kembali ke daftar kuis</Link></div>;
+  if (result) {
+    return (
+      <div className="qz-dashboard qz-enter">
+        <PageHeader eyebrow="Hasil kuis" title={quiz?.title || 'Hasil kuis'} description="Jawabanmu sudah dinilai oleh Nalaro Class." />
+        <motion.div initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 180, damping: 20 }}>
+          <Card className={`qz-quiz-score qz-quiz-score--${result.passed ? 'passed' : 'retry'}`}>
+            <div className="qz-result-burst" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} />)}</div>
+            <span>{result.passed ? 'Target tercapai' : 'Hasil tersimpan'}</span>
+            <strong>{result.score}</strong>
+            <p>{result.passed ? 'Mantap! Kamu mencapai nilai kelulusan.' : 'Nilaimu belum mencapai batas kelulusan, tetapi hasilnya sudah tercatat.'}</p>
+            <small>{result.earnedPoints} dari {result.totalPoints} poin</small>
+          </Card>
+        </motion.div>
+        {result.review?.map((item, index) => (
+          <motion.div key={item.questionId} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.04, 0.35) }}>
+            <Card className="qz-review">
+              <span className="qz-eyebrow">SOAL {index + 1}</span>
+              <strong>{item.prompt}</strong>
+              <p><b>Jawabanmu:</b> {resultAnswer(item.answer)}</p>
+              <p><b>Jawaban benar:</b> {resultAnswer(item.correctAnswer)}</p>
+              {item.explanation ? <small>{item.explanation}</small> : null}
+            </Card>
+          </motion.div>
+        ))}
+        <Link className={buttonClassName({ variant: 'secondary' })} to={`/student/classes/${classId}/quizzes`}>Kembali ke daftar kuis</Link>
+      </div>
+    );
+  }
 
-  return <div className="qz-dashboard qz-enter"><PageHeader eyebrow="Kuis mandiri" title={quiz?.title || 'Memuat kuis...'} description={quiz?.description} actions={<Link className={buttonClassName({ variant: 'secondary' })} to={`/student/classes/${classId}/quizzes`}>Keluar</Link>} />{error ? <div className="qz-inline-state qz-inline-state--error" role="alert">{error}</div> : null}{quiz && activeQuestion ? <div className="qz-attempt"><Card className="qz-attempt__progress"><div className="qz-attempt__status"><span>{remainingCount ? `${remainingCount} soal tersisa` : 'Semua soal terjawab'}</span><small>{draftReady ? 'Progres tersimpan otomatis di tab ini' : 'Menyiapkan progres...'}</small></div><Progress value={answeredCount} max={questions.length} label={`${answeredCount} dari ${questions.length} soal terjawab`} /><div className="qz-attempt-navigator" aria-label="Navigasi soal">{questions.map((question, index) => <motion.button whileTap={{ scale: 0.92 }} key={question.id} type="button" className={`${index === activeIndex ? 'is-active ' : ''}${answered(answers[question.id]) ? 'is-answered' : ''}`.trim()} aria-label={`Buka soal ${index + 1}${answered(answers[question.id]) ? ', sudah dijawab' : ', belum dijawab'}`} aria-current={index === activeIndex ? 'step' : undefined} onClick={() => setActiveIndex(index)}>{index + 1}</motion.button>)}</div></Card><AnimatePresence mode="wait" initial={false}><motion.div key={activeQuestion.id} initial={{ opacity: 0, x: 28, filter: 'blur(3px)' }} animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, x: -20, filter: 'blur(2px)' }} transition={{ duration: 0.22 }}><Card className="qz-attempt-question"><div className="qz-attempt-question__head"><div><span className="qz-eyebrow">SOAL {activeIndex + 1}</span><small>{questionTypeLabel[activeQuestion.type] || 'Pertanyaan'}</small></div><span className="qz-question-points">{activeQuestion.points} poin</span></div><h2>{activeQuestion.prompt}</h2>{activeQuestion.imageUrl && activeQuestion.type !== 'image_hotspot' ? <img className="qz-question-image__player" src={activeQuestion.imageUrl} alt="Ilustrasi soal" /> : null}<AnswerInput question={activeQuestion} value={answers[activeQuestion.id]} onChange={setAnswer} /><div className="qz-attempt-actions"><Button variant="secondary" disabled={activeIndex === 0 || busy} onClick={() => setActiveIndex((index) => index - 1)}>← Sebelumnya</Button><span className="qz-attempt-shortcut">Gunakan ← → untuk pindah soal</span>{activeIndex < questions.length - 1 ? <Button disabled={busy} onClick={() => setActiveIndex((index) => index + 1)}>Soal berikutnya →</Button> : <Button disabled={busy} onClick={() => setConfirmOpen(true)}>Tinjau & kumpulkan</Button>}</div></Card></motion.div></AnimatePresence></div> : null}<Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} title={remainingCount ? 'Masih ada soal kosong' : 'Kumpulkan jawaban?'} description={`${answeredCount} dari ${questions.length} soal sudah terjawab.`} footer={<><Button variant="secondary" onClick={() => setConfirmOpen(false)}>Periksa lagi</Button><Button disabled={busy} onClick={submit}>{busy ? 'Mengumpulkan...' : 'Kumpulkan sekarang'}</Button></>}><p className="qz-dialog__copy">{remainingCount ? `${remainingCount} soal belum dijawab dan akan dikumpulkan sebagai kosong.` : 'Semua soal sudah terjawab. Setelah dikumpulkan, jawaban tidak dapat diubah.'}</p></Dialog></div>;
+  return (
+    <div className="qz-dashboard qz-enter">
+      <PageHeader
+        eyebrow="Kuis mandiri"
+        title={quiz?.title || 'Memuat kuis...'}
+        description={quiz?.description}
+        actions={<Link className={buttonClassName({ variant: 'secondary' })} to={`/student/classes/${classId}/quizzes`}>Keluar</Link>}
+      />
+      {error ? <div className="qz-inline-state qz-inline-state--error" role="alert">{error}</div> : null}
+      {quiz && activeQuestion ? (
+        <div className="qz-attempt">
+          <Card className="qz-attempt__progress">
+            <div className="qz-attempt__status">
+              <span>{remainingCount ? `${remainingCount} soal tersisa` : 'Semua soal terjawab'}</span>
+              <small>{draftReady ? 'Progres tersimpan otomatis di tab ini' : 'Menyiapkan progres...'}</small>
+            </div>
+            <Progress value={answeredCount} max={questions.length} label={`${answeredCount} dari ${questions.length} soal terjawab`} />
+            <div className="qz-attempt-navigator" aria-label="Navigasi soal">
+              {questions.map((question, index) => {
+                const questionAnswered = isAnswered(question);
+                return (
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    key={question.id}
+                    type="button"
+                    className={`${index === activeIndex ? 'is-active ' : ''}${questionAnswered ? 'is-answered' : ''}`.trim()}
+                    aria-label={`Buka soal ${index + 1}${questionAnswered ? ', sudah dijawab' : ', belum dijawab'}`}
+                    aria-current={index === activeIndex ? 'step' : undefined}
+                    onClick={() => setActiveIndex(index)}
+                  >
+                    {index + 1}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </Card>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={activeQuestion.id} initial={{ opacity: 0, x: 28, filter: 'blur(3px)' }} animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, x: -20, filter: 'blur(2px)' }} transition={{ duration: 0.22 }}>
+              <Card className="qz-attempt-question">
+                <div className="qz-attempt-question__head">
+                  <div>
+                    <span className="qz-eyebrow">SOAL {activeIndex + 1}</span>
+                    <small>{questionTypeLabel[activeQuestion.type] || 'Pertanyaan'}</small>
+                  </div>
+                  <span className="qz-question-points">{activeQuestion.points} poin</span>
+                </div>
+                <h2>{activeQuestion.prompt}</h2>
+                {activeQuestion.imageUrl && activeQuestion.type !== 'image_hotspot' ? <img className="qz-question-image__player" src={activeQuestion.imageUrl} alt="Ilustrasi soal" /> : null}
+                <AnswerInput question={activeQuestion} value={answers[activeQuestion.id]} onChange={setAnswer} />
+                <div className="qz-attempt-actions">
+                  <Button variant="secondary" disabled={activeIndex === 0 || busy} onClick={() => setActiveIndex((index) => index - 1)}>Sebelumnya</Button>
+                  <span className="qz-attempt-shortcut">Gunakan tombol panah untuk pindah soal</span>
+                  {activeIndex < questions.length - 1
+                    ? <Button disabled={busy} onClick={() => setActiveIndex((index) => index + 1)}>Soal berikutnya</Button>
+                    : <Button disabled={busy} onClick={() => setConfirmOpen(true)}>Tinjau & kumpulkan</Button>}
+                </div>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      ) : null}
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title={remainingCount ? 'Masih ada soal kosong' : 'Kumpulkan jawaban?'}
+        description={`${answeredCount} dari ${questions.length} soal sudah terjawab.`}
+        footer={(
+          <>
+            <Button variant="secondary" onClick={() => setConfirmOpen(false)}>Periksa lagi</Button>
+            <Button disabled={busy} onClick={submit}>{busy ? 'Mengumpulkan...' : 'Kumpulkan sekarang'}</Button>
+          </>
+        )}
+      >
+        <p className="qz-dialog__copy">{remainingCount ? `${remainingCount} soal belum dijawab dan akan dikumpulkan sebagai kosong.` : 'Semua soal sudah terjawab. Setelah dikumpulkan, jawaban tidak dapat diubah.'}</p>
+      </Dialog>
+    </div>
+  );
 }
 
 export default function QuizAttempt() {

@@ -104,6 +104,24 @@
 .qz-text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .qz-text-button { min-height: 44px; border: 0; border-radius: 9px; background: transparent; cursor: pointer; }
 .qz-text-button:hover { background: var(--qz-primary-soft); }
+.qz-teacher-today .qz-card__body { display: grid; gap: 16px; padding: 20px; }
+.qz-teacher-today__head { display: flex; align-items: flex-start; gap: 12px; }
+.qz-teacher-today__head > span { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 13px; color: #356ca6; background: #eaf1fb; }
+.qz-teacher-today__head h2 { margin: 0; font-size: 1rem; font-weight: 800; letter-spacing: -0.025em; }
+.qz-teacher-today__head p { margin: 5px 0 0; color: var(--qz-text-muted); font-size: .74rem; line-height: 1.55; }
+.qz-teacher-today__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+.qz-teacher-today__stats > div { min-width: 0; padding: 11px 8px; border-radius: 12px; background: #f7f6fb; text-align: center; }
+.qz-teacher-today__stats strong { display: block; font-size: 1.15rem; line-height: 1.15; font-weight: 850; color: var(--qz-text); }
+.qz-teacher-today__stats span { display: block; margin-top: 4px; color: var(--qz-text-muted); font-size: .6rem; line-height: 1.3; }
+.qz-teacher-today__actions { display: grid; gap: 8px; }
+.qz-teacher-today__action { display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 42px; padding: 10px 11px; border: 1px solid var(--tone-decoration); border-radius: 12px; color: var(--tone-ink); background: var(--tone-bg); text-decoration: none; font-size: .72rem; font-weight: 750; line-height: 1.4; }
+.qz-teacher-today__action:hover { border-color: var(--tone-ink); }
+.qz-teacher-today__action svg { flex-shrink: 0; }
+.qz-teacher-today__action svg:last-child { margin-left: auto; }
+.qz-teacher-today__action span { min-width: 0; overflow-wrap: anywhere; }
+.qz-teacher-today__empty { padding: 14px; border: 1px dashed var(--qz-border-strong); border-radius: 13px; color: var(--qz-text-muted); background: #fbfbfd; font-size: .74rem; line-height: 1.6; }
+.qz-teacher-today__studio { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border-radius: 12px; color: var(--qz-primary-hover); background: var(--qz-primary-soft); font-size: .76rem; font-weight: 800; text-decoration: none; }
+.qz-teacher-today__studio:hover { background: #e9e2fb; }
 .qz-agenda .qz-card__body { padding: 22px 18px 12px; }
 .qz-agenda .qz-section-header { margin-bottom: 19px; }
 .qz-agenda .qz-section-header > svg { color: var(--qz-text-muted); }

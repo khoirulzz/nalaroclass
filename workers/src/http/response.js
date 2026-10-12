@@ -16,8 +16,12 @@ export function json(c, status, payload, headers = {}) {
   });
 }
 
+export function logError(message, fields = {}) {
+  console.error(JSON.stringify({ level: 'error', message, ...fields }));
+}
+
 export function errorResponse(c, error) {
   const normalized = error instanceof HttpError ? error : new HttpError(500, 'INTERNAL_ERROR', 'Terjadi gangguan pada layanan.');
-  if (!(error instanceof HttpError)) console.error('Unhandled API error', { requestId: requestId(c), name: error?.name, message: error?.message });
+  if (!(error instanceof HttpError)) logError('Unhandled API error', { requestId: requestId(c), name: error?.name, errorMessage: error?.message });
   return json(c, normalized.status, { error: { code: normalized.code, message: normalized.message, ...(normalized.details ? { details: normalized.details } : {}) } });
 }

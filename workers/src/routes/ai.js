@@ -6,7 +6,7 @@ import { verifyFirebaseToken } from '../services/firebase-auth.js';
 
 const MAX_BODY_BYTES = 24_000;
 const MAX_CONTEXT_CHARS = 5_300;
-const MAX_INSTRUCTION_CHARS = 500;
+const MAX_INSTRUCTION_CHARS = 900;
 
 async function requireAiAuth(c, next) {
   if (!c.env.FIREBASE_PROJECT_ID) throw new HttpError(503, 'AI_NOT_CONFIGURED', 'Asisten AI belum dikonfigurasi.');
@@ -41,7 +41,7 @@ export function registerAiRoutes(app) {
     const task = typeof input?.task === 'string' ? input.task : '';
     const context = typeof input?.context === 'string' ? input.context.trim() : '';
     const instruction = typeof input?.instruction === 'string' ? input.instruction.trim() : '';
-    if (!['material_draft', 'quiz_draft', 'assessment_feedback'].includes(task) || !context || context.length > MAX_CONTEXT_CHARS || instruction.length > MAX_INSTRUCTION_CHARS) throw badRequest('AI_INPUT_LIMIT', 'Referensi atau instruksi AI terlalu panjang.');
+    if (!['material_draft', 'quiz_draft', 'assessment_feedback', 'teaching_plan'].includes(task) || !context || context.length > MAX_CONTEXT_CHARS || instruction.length > MAX_INSTRUCTION_CHARS) throw badRequest('AI_INPUT_LIMIT', 'Referensi atau instruksi AI terlalu panjang.');
     return json(c, 200, { data: await generateAiResponse(c.env, { task, context, instruction }) });
   });
 }

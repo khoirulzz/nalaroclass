@@ -1,5 +1,6 @@
 import {
   AttendanceIcon,
+  AiAssistIcon,
   BookmarkIcon,
   ClassesIcon,
   HomeIcon,
@@ -10,6 +11,7 @@ import {
 export const teacherNavigation = [
   { label: 'Beranda', path: '/teacher/home', icon: HomeIcon, end: true },
   { label: 'Kelas', path: '/teacher/classes', icon: ClassesIcon },
+  { label: 'Studio', path: '/teacher/studio', icon: AiAssistIcon },
   { label: 'Kuis', path: '/teacher/quizzes', icon: QuizIcon },
   { label: 'Presensi', path: '/teacher/attendance', icon: AttendanceIcon },
 ];

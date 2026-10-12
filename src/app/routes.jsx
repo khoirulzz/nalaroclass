@@ -18,6 +18,7 @@ const FaceProfile = lazy(() => import('../pages/student/FaceProfile'));
 const TeacherDashboard = lazy(() => import('../pages/teacher/TeacherDashboard'));
 const TeacherClasses = lazy(() => import('../pages/teacher/TeacherClasses'));
 const TeacherAttendance = lazy(() => import('../pages/teacher/TeacherAttendance'));
+const TeacherStudio = lazy(() => import('../pages/teacher/TeacherStudio'));
 const ClassOverview = lazy(() => import('../pages/ClassOverview'));
 const ClassSessions = lazy(() => import('../pages/ClassSessions'));
 const ClassMaterials = lazy(() => import('../pages/ClassMaterials'));
@@ -80,6 +81,7 @@ export default function AppRoutes() {
           <Route path="teacher" element={<RequireRole role="teacher"><Navigate to="home" replace /></RequireRole>} />
           <Route path="teacher/home" element={<RequireRole role="teacher"><TeacherDashboard /></RequireRole>} />
           <Route path="teacher/classes" element={<RequireRole role="teacher"><TeacherClasses /></RequireRole>} />
+          <Route path="teacher/studio" element={<RequireRole role="teacher"><TeacherStudio /></RequireRole>} />
           <Route path="teacher/classes/:classId/overview" element={<RequireRole role="teacher"><ClassOverview role="teacher" /></RequireRole>} />
           <Route path="teacher/classes/:classId/sessions" element={<RequireRole role="teacher"><ClassSessions role="teacher" /></RequireRole>} />
           <Route path="teacher/classes/:classId/materials" element={<RequireRole role="teacher"><ClassMaterials role="teacher" /></RequireRole>} />

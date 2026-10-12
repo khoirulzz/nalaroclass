@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { BookOpenCheck, CheckCircle2, ClipboardList, FileQuestion, Sparkles } from 'lucide-react';
 import { ArrowRightIcon, CalendarIcon, ClassesIcon, QuizIcon } from '../icons';
 import { Button, Card, SectionHeader, Skeleton, buttonClassName } from '../ui';
 import { agendaErrorMessage, getAgenda } from '../../services/agenda.service';
@@ -19,7 +20,7 @@ export function WelcomeBanner({ name, role = 'teacher' }) {
         <div className="qz-art-orbit" />
         <div className="qz-art-card"><span className="qz-art-label">LET'S LEARN</span><ClassesIcon size={54} /><span className="qz-art-line" /><span className="qz-art-line qz-art-line--short" /><div className="qz-art-dots"><i /><i /><i /></div></div>
         <div className="qz-art-note"><QuizIcon size={26} /><span>Ide besar<br /><strong>mulai di sini.</strong></span></div>
-        <span className="qz-art-spark">✦</span><span className="qz-art-star">✳</span>
+        <span className="qz-art-spark">*</span><span className="qz-art-star">+</span>
       </div>
     </section>
   );
@@ -31,6 +32,49 @@ export function QuickAction({ to, icon: Icon, title, description, tone = 'purple
 
 export function MetricCard({ icon: Icon, label, value, detail, tone = 'purple' }) {
   return <div className={`qz-metric qz-tone-${tone}`}><span className="qz-metric__icon"><Icon size={21} /></span><div><span className="qz-metric__label">{label}</span><strong>{value}</strong><span className="qz-metric__detail">{detail}</span></div></div>;
+}
+
+export function TeacherToday({ classes = [], ready = false }) {
+  const activeClasses = classes.filter((item) => item.status === 'active');
+  const emptyMaterials = activeClasses.filter((item) => !Number(item.materialsCount || 0));
+  const emptyQuizzes = activeClasses.filter((item) => !Number(item.quizzesCount || 0));
+  const emptyTasks = activeClasses.filter((item) => !Number(item.tasksCount || 0));
+  const largestClass = activeClasses.reduce((selected, item) => (Number(item.studentsCount || 0) > Number(selected?.studentsCount || 0) ? item : selected), null);
+  const completeClasses = activeClasses.filter((item) => Number(item.materialsCount || 0) && Number(item.quizzesCount || 0) && Number(item.tasksCount || 0));
+  const todayLabel = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' }).format(new Date());
+  const stats = [
+    { label: 'Kelas aktif', value: activeClasses.length },
+    { label: 'Perlu materi', value: emptyMaterials.length },
+    { label: 'Alur lengkap', value: completeClasses.length },
+  ];
+  const actions = [
+    emptyMaterials[0] ? { icon: BookOpenCheck, label: `Siapkan materi pertama untuk ${emptyMaterials[0].name}`, to: `/teacher/classes/${emptyMaterials[0].id}/materials/new`, tone: 'mint' } : null,
+    emptyQuizzes[0] ? { icon: FileQuestion, label: `Buat evaluasi ringan untuk ${emptyQuizzes[0].name}`, to: `/teacher/classes/${emptyQuizzes[0].id}/quizzes/new`, tone: 'peach' } : null,
+    emptyTasks[0] ? { icon: ClipboardList, label: `Rancang tugas untuk ${emptyTasks[0].name}`, to: `/teacher/classes/${emptyTasks[0].id}/tasks/new`, tone: 'purple' } : null,
+    largestClass ? { icon: CheckCircle2, label: `Pantau dinamika ${largestClass.name}`, to: `/teacher/classes/${largestClass.id}/analytics`, tone: 'blue' } : null,
+  ].filter(Boolean).slice(0, 3);
+
+  return (
+    <Card className="qz-teacher-today">
+      <div className="qz-teacher-today__head">
+        <span><ClipboardList size={20} /></span>
+        <div>
+          <h2>Teacher Today</h2>
+          <p>{ready ? `${todayLabel}. ${activeClasses.length} kelas aktif perlu ritme belajar yang konsisten.` : 'Ringkasan aksi akan muncul setelah data kelas siap.'}</p>
+        </div>
+      </div>
+      <div className="qz-teacher-today__stats" aria-label="Ringkasan hari ini">
+        {ready ? stats.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>) : <Skeleton height={66} />}
+      </div>
+      <div className="qz-teacher-today__actions">
+        {ready && actions.length ? actions.map((item) => {
+          const Icon = item.icon;
+          return <Link key={item.to} className={`qz-teacher-today__action qz-tone-${item.tone}`} to={item.to}><Icon size={16} /><span>{item.label}</span><ArrowRightIcon size={15} /></Link>;
+        }) : <div className="qz-teacher-today__empty">Mulai dari membuat kelas atau buka Studio untuk menyusun rencana ajar pertama.</div>}
+      </div>
+      <Link to="/teacher/studio" className="qz-teacher-today__studio"><Sparkles size={16} /> Buka Teaching Studio</Link>
+    </Card>
+  );
 }
 
 export function WeekAgenda({ role = 'teacher' }) {
@@ -58,8 +102,8 @@ export function WeekAgenda({ role = 'teacher' }) {
   };
   return (
     <Card className="qz-agenda">
-      <SectionHeader title="Agenda belajar" description="Pertemuan dan tenggat tugas · WIB" action={<CalendarIcon size={20} />} />
-      <div className="qz-agenda__month"><span>{dateFormat(selected, { month: 'long', year: 'numeric' })}</span><div><button type="button" onClick={() => changeWeek(-1)} aria-label="Minggu sebelumnya">‹</button><button type="button" onClick={() => changeWeek(1)} aria-label="Minggu berikutnya">›</button></div></div>
+      <SectionHeader title="Agenda belajar" description="Pertemuan dan tenggat tugas - WIB" action={<CalendarIcon size={20} />} />
+      <div className="qz-agenda__month"><span>{dateFormat(selected, { month: 'long', year: 'numeric' })}</span><div><button type="button" onClick={() => changeWeek(-1)} aria-label="Minggu sebelumnya">&lt;</button><button type="button" onClick={() => changeWeek(1)} aria-label="Minggu berikutnya">&gt;</button></div></div>
       <div className="qz-week" role="group" aria-label="Pilih tanggal">
         {days.map((day) => { const key = dateKey(day); const count = state.events.filter((event) => event.date === key).length; return <button type="button" key={key} aria-pressed={key === selected} aria-current={key === today ? 'date' : undefined} aria-label={`${dateFormat(key, { dateStyle: 'full' })}${count ? `, ${count} agenda` : ''}`} onClick={() => setSelected(key)}><span>{dateFormat(key, { weekday: 'short' })}</span><strong>{day.getUTCDate()}</strong><i className={count ? 'has-events' : undefined} /></button>; })}
       </div>

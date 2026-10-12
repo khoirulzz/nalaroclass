@@ -21,3 +21,19 @@ export function initialiseArrangeAnswers(questions, currentAnswers, random = Mat
   }
   return changed ? nextAnswers : currentAnswers;
 }
+
+export function orderedQuestions(questions, questionOrder = []) {
+  const items = Array.isArray(questions) ? questions : [];
+  if (!Array.isArray(questionOrder) || !questionOrder.length) return items;
+  const byId = new Map(items.map((question) => [question.id, question]));
+  const ordered = questionOrder.map((id) => byId.get(id)).filter(Boolean);
+  const seen = new Set(ordered.map((question) => question.id));
+  return [...ordered, ...items.filter((question) => !seen.has(question.id))];
+}
+
+export function hasQuestionAnswer(question, value, touched = false) {
+  if (question?.type === 'arrange') return Boolean(touched && Array.isArray(value) && value.length > 0);
+  if (Array.isArray(value)) return value.length > 0;
+  if (value && typeof value === 'object') return true;
+  return value !== '' && value !== undefined && value !== null;
+}

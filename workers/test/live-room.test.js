@@ -5,10 +5,18 @@ import { LiveQuizRoom } from '../src/durable/LiveQuizRoom.js';
 
 function roomFixture(env = {}) {
   const sqlite = new DatabaseSync(':memory:');
+  const prepare = (query, values) => {
+    const bound = [];
+    const normalized = query.replace(/\?(\d+)/g, (_, index) => {
+      bound.push(values[Number(index) - 1]);
+      return '?';
+    });
+    return { statement: sqlite.prepare(normalized), values: bound.length ? bound : values };
+  };
   const sql = { exec(query, ...values) {
-    const statement = sqlite.prepare(query);
-    if (/^(SELECT|PRAGMA)\b/i.test(query.trim())) return { toArray: () => statement.all(...values) };
-    statement.run(...values);
+    const current = prepare(query, values);
+    if (/^(SELECT|PRAGMA)\b/i.test(query.trim())) return { toArray: () => current.statement.all(...current.values) };
+    current.statement.run(...current.values);
     return { toArray: () => [] };
   } };
   const context = {
