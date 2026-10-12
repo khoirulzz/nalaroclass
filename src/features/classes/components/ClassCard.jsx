@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, ClassesIcon, MembersIcon, QuizIcon } from '../../../components/icons';
+import { ArrowRightIcon, MembersIcon, QuizIcon } from '../../../components/icons';
+import ThemeMascot from '../../../components/classroom/ThemeMascot';
+import { getClassTheme, classThemeClass } from '../classThemes';
+import '../../../styles/class-themes.css';
 import Badge from '../../../components/ui/Badge';
 
 export default function ClassCard({ classItem, role = 'teacher' }) {
@@ -7,9 +10,9 @@ export default function ClassCard({ classItem, role = 'teacher' }) {
   const tones = ['purple', 'mint', 'peach', 'blue'];
   const colorIndex = Array.from(String(classItem.id)).reduce((sum, char) => sum + char.charCodeAt(0), 0) % tones.length;
   return (
-    <Link to={`${basePath}/${classItem.id}/overview`} className={`qz-class-card qz-tone-${tones[colorIndex]}`}>
+    <Link to={`${basePath}/${classItem.id}/overview`} className={`qz-class-card qz-tone-${tones[colorIndex]} ${classThemeClass(classItem.themeId)}`}>
       <div className="qz-class-card__top">
-        <span className="qz-class-card__icon"><ClassesIcon size={21} /></span>
+        <span className="qz-class-card__icon">{getClassTheme(classItem.themeId) ? <ThemeMascot themeId={classItem.themeId} size={52} /> : <span aria-hidden="true">◆</span>}</span>
         <Badge tone="primary">{classItem.status === 'active' ? 'Kelas aktif' : 'Tidak aktif'}</Badge>
       </div>
       <div className="qz-class-card__body">

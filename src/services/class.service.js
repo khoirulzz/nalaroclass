@@ -1,5 +1,12 @@
 import { apiRequest } from './api';
 
+export async function supportsClassThemes() {
+  try {
+    const data = await apiRequest('/classes/capabilities');
+    return data?.themeSelection === true;
+  } catch { return false; } // Older deployed Workers must remain compatible.
+}
+
 export async function listClasses({ scope = 'owned', signal } = {}) {
   const data = await apiRequest(`/classes?scope=${encodeURIComponent(scope)}`, { signal });
   return data?.classes || [];
@@ -7,6 +14,11 @@ export async function listClasses({ scope = 'owned', signal } = {}) {
 
 export async function createClass(input) {
   const data = await apiRequest('/classes', { method: 'POST', body: input });
+  return data.class;
+}
+
+export async function updateClassTheme(classId, themeId) {
+  const data = await apiRequest(`/classes/${encodeURIComponent(classId)}/theme`, { method: 'PATCH', body: { themeId } });
   return data.class;
 }
 
