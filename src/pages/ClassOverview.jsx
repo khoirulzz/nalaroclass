@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { BarChart3, Palette, Rocket, Shield, Smile, Trees } from 'lucide-react';
+import { BarChart3, Palette } from 'lucide-react';
+import ThemeMascot from '../components/classroom/ThemeMascot';
 import { Link, useParams } from 'react-router-dom';
 import ThemePicker from '../features/classes/components/ThemePicker';
 import { getClassTheme, classThemeClass } from '../features/classes/classThemes';
@@ -51,14 +52,13 @@ export default function ClassOverview({ role }) {
 
   const classItem = state.classItem;
   const theme = getClassTheme(classItem.themeId);
-  const themeIcon = { superhero: Shield, playground: Smile, space: Rocket, fantasy: Trees, studio: Palette };
-  const WorldIcon = theme ? themeIcon[theme.id] : null;
   const saveTheme = async (themeId) => {
     if (themeSaving) return;
     setThemeSaving(true);
     try {
       const updated = await updateClassTheme(classId, themeId);
       setState((current) => ({ ...current, classItem: updated }));
+      window.dispatchEvent(new CustomEvent('nalaro:class-theme-changed', { detail: { classId, themeId: updated.themeId } }));
       setCopyNotice('Tema kelas berhasil diperbarui untuk seluruh anggota.');
       setThemeEditing(false);
     } catch (error) { setCopyNotice(classErrorMessage(error)); }
@@ -78,7 +78,7 @@ export default function ClassOverview({ role }) {
       <ClassWorkspaceNav role={role} classId={classId} />
       {theme ? <section className="qz-world-banner" aria-label={'Tema kelas ' + theme.name}>
         <div><span className="qz-world-banner__label">{theme.name}</span><h2>{theme.short}</h2><p>{theme.subtitle}</p></div>
-        <span className="qz-world-banner__art" aria-hidden="true">{WorldIcon ? <WorldIcon strokeWidth={1.7} /> : null}</span>
+        <span className="qz-world-banner__art" aria-hidden="true"><ThemeMascot themeId={theme.id} size={86} /></span>
       </section> : null}
       {role === 'teacher' ? <div className="qz-class-theme-controls">
         <button type="button" className={buttonClassName({ variant: 'secondary', size: 'sm' })} onClick={() => setThemeEditing(!themeEditing)} aria-expanded={themeEditing}><Palette size={16} /> {themeEditing ? 'Tutup pilihan tema' : 'Ganti tema kelas'}</button>
