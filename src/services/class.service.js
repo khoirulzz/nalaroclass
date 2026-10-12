@@ -10,6 +10,11 @@ export async function createClass(input) {
   return data.class;
 }
 
+export async function updateClassTheme(classId, themeId) {
+  const data = await apiRequest(`/classes/${encodeURIComponent(classId)}/theme`, { method: 'PATCH', body: { themeId } });
+  return data.class;
+}
+
 export async function joinClass(code) {
   const idempotencyKey = crypto.randomUUID();
   const data = await apiRequest('/classes/join', {
