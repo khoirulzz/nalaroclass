@@ -7,6 +7,11 @@ export function validateClassId(value) {
   return value;
 }
 
+const THEMES = ['classic', 'superhero', 'playground', 'space', 'fantasy', 'studio'];
+export function validateClassTheme(themeId) {
+  if (!THEMES.includes(themeId)) throw badRequest('INVALID_THEME', 'Tema kelas tidak tersedia.');
+  return themeId;
+}
 export function validateCreateClass(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw badRequest('INVALID_BODY', 'Data kelas tidak valid.');
   const name = cleanText(input.name);
@@ -16,7 +21,7 @@ export function validateCreateClass(input) {
   if (name.length > 80) errors.name = 'Nama kelas maksimal 80 karakter.';
   if (description.length > 400) errors.description = 'Deskripsi maksimal 400 karakter.';
   if (Object.keys(errors).length) throw badRequest('VALIDATION_ERROR', 'Periksa kembali data kelas.', errors);
-  return { name, description };
+  return { name, description, themeId: validateClassTheme(input.themeId || 'classic') };
 }
 
 export function validateJoinClass(input) {
