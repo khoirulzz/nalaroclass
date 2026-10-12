@@ -1,12 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AddIcon, ErrorIcon } from '../../components/icons';
 import { Button, Dialog, Input, PageHeader, ProcessLoader, Textarea, Toast } from '../../components/ui';
 import ThemePicker from '../../features/classes/components/ThemePicker';
 import ClassCollection from '../../features/classes/components/ClassCollection';
 import { useClasses } from '../../features/classes/hooks/useClasses';
-import { classErrorMessage } from '../../services/class.service';
+import { classErrorMessage, supportsClassThemes } from '../../services/class.service';
 
-const initialForm = { name: '', description: '', themeId: 'superhero' };
+const initialForm = { name: '', description: '', themeId: 'classic' };
 
 export default function TeacherClasses() {
   const { classes, status, error, configured, reload, createClass } = useClasses();
@@ -16,6 +16,8 @@ export default function TeacherClasses() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [notice, setNotice] = useState(null);
+  const [themesEnabled, setThemesEnabled] = useState(false);
+  useEffect(() => { let active = true; supportsClassThemes().then((enabled) => { if (active) setThemesEnabled(enabled); }); return () => { active = false; }; }, []);
 
   const closeDialog = useCallback(() => {
     if (submitting) return;
@@ -25,7 +27,7 @@ export default function TeacherClasses() {
   }, [submitting]);
 
   const openDialog = () => {
-    setForm(initialForm);
+    setForm({ ...initialForm, themeId: themesEnabled ? 'superhero' : 'classic' });
     setFieldErrors({});
     setSubmitError('');
     setDialogOpen(true);
@@ -80,7 +82,7 @@ export default function TeacherClasses() {
         <form id="create-class-form" onSubmit={handleSubmit} className="qz-form-stack">
           <Input label="Nama kelas" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="Contoh: Matematika XI A" maxLength={80} error={fieldErrors.name} autoFocus />
           <Textarea label="Deskripsi" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} placeholder="Jelaskan fokus pembelajaran kelas ini." maxLength={400} error={fieldErrors.description} hint={`${form.description.length}/400 karakter`} />
-          <ThemePicker value={form.themeId} onChange={(themeId) => setForm((current) => ({ ...current, themeId }))} />
+          {themesEnabled ? <ThemePicker value={form.themeId} onChange={(themeId) => setForm((current) => ({ ...current, themeId }))} /> : null}
           {submitError ? <div className="qz-inline-state qz-inline-state--error" role="alert">{submitError}</div> : null}
         </form>
       </Dialog>
