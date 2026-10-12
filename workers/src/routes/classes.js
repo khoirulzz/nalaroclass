@@ -2,7 +2,7 @@ import { HttpError, badRequest, forbidden } from '../http/errors.js';
 import { json } from '../http/response.js';
 import { assertAccountRole, getAuth, requireAuth } from '../middleware/auth.js';
 import { ClassRepository } from '../repositories/class.repository.js';
-import { validateClassId, validateCreateClass, validateJoinClass } from '../validation/classes.js';
+import { validateClassId, validateClassTheme, validateCreateClass, validateJoinClass } from '../validation/classes.js';
 
 const MAX_BODY_BYTES = 4_096;
 
@@ -45,6 +45,13 @@ export function registerClassRoutes(app, { repositoryFactory = (env) => new Clas
     await assertAccountRole(c, 'student');
     const input = validateJoinClass(await parseBody(c, 'Data kode kelas wajib diisi.'));
     const classItem = await repository(c).joinByCode({ uid: identity.uid, name: identity.name || identity.email || 'Siswa Quizzy', idempotencyKey: idempotencyKey(c), ...input });
+    return json(c, 200, { data: { class: classItem } });
+  });
+  app.patch('/classes/:classId/theme', requireAuth, async (c) => {
+    await assertAccountRole(c, 'teacher');
+    const body = await parseBody(c, 'Tema kelas wajib diisi.');
+    const themeId = validateClassTheme(body?.themeId);
+    const classItem = await repository(c).updateTheme(validateClassId(c.req.param('classId')), getAuth(c).uid, themeId);
     return json(c, 200, { data: { class: classItem } });
   });
   app.get('/classes/:classId/members', requireAuth, async (c) => { await assertAccountRole(c, 'teacher'); return json(c, 200, { data: { members: await repository(c).listMembers(validateClassId(c.req.param('classId')), getAuth(c).uid) } }); });
