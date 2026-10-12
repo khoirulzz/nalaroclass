@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { navigationForRole, pageMeta } from '../../app/navigation';
 import { useAuth } from '../../context/useAuth';
 import AppHeader from './AppHeader';
+import ClassThemeScope from '../classroom/ClassThemeScope';
 import MobileNavigation from './MobileNavigation';
 import Sidebar from './Sidebar';
 
@@ -55,7 +56,7 @@ export default function AppShell() {
       <Sidebar role={role} items={items} profile={userProfile} user={user} open={mobileOpen} onNavigate={() => setMobileOpen(false)} />
       <div className="qz-main" inert={mobileOpen ? true : undefined}>
         <AppHeader meta={meta} role={role} profile={userProfile} user={user} menuOpen={mobileOpen} onMenu={() => setMobileOpen(true)} onLogout={handleLogout} onProfile={() => navigate('/profile')} />
-        <main className="qz-content" id="main-content" tabIndex={-1}><Outlet /></main>
+        <main className="qz-content" id="main-content" tabIndex={-1}><ClassThemeScope><Outlet /></ClassThemeScope></main>
       </div>
       {!mobileOpen ? <MobileNavigation items={items} /> : null}
     </div>
