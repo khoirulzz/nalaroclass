@@ -41,3 +41,18 @@
 .qz-class-card[class*="qz-theme-"]:not(.qz-theme-classic) { border-radius:var(--world-radius); }
 @media (max-width:600px) { .qz-theme-picker__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .qz-theme-choice { padding:7px; } .qz-world-banner { padding:18px; min-height:124px; } .qz-world-banner__art { width:62px; height:62px; } .qz-world-banner__art svg { width:34px; height:34px; } }
 @media (prefers-reduced-motion:reduce) { .qz-theme-choice { transition:none; } .qz-theme-choice:hover { transform:none; } }
+
+/* Shared class-route component variants: visual changes are limited to the active class. */
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) { --qz-primary:var(--world); --qz-primary-hover:var(--world); --qz-shadow-card:var(--world-shadow); }
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-card,
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-quick-action,
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-class-card { border-radius:var(--world-radius); }
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-card { border-color:var(--world-edge); }
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-page-header { border-color:var(--world-edge); }
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-class-workspace-nav a[aria-current="page"] { color:var(--world); }
+.qz-class-world-scope[class*="qz-theme-"]:not(.qz-theme-classic) .qz-btn-primary { background:var(--world); border-radius:var(--world-radius); }
+.qz-class-world-scope.qz-theme-space { color:#292c39; }
+.qz-class-world-scope .qz-theme-setting { padding:18px; margin-top:14px; border:1px solid var(--world-edge,#d9d7e2); border-radius:14px; background:#fff; }
+.qz-class-world-scope .qz-class-theme-controls { display:block; }
+.qz-theme-space .qz-world-banner p { opacity:.9; }
+@media(max-width:650px) { .qz-class-world-scope .qz-theme-setting { padding:10px; } }
