@@ -23,6 +23,10 @@ function idempotencyKey(c) {
 
 export function registerClassRoutes(app, { repositoryFactory = (env) => new ClassRepository(env.DB) } = {}) {
   const repository = (c) => repositoryFactory(c.env);
+  app.get('/classes/capabilities', requireAuth, async (c) => {
+    const migration = await c.env.DB.prepare("SELECT name FROM pragma_table_info('classes') WHERE name = 'theme_id'").first();
+    return json(c, 200, { data: { themeSelection: Boolean(migration) } });
+  });
   app.get('/classes', requireAuth, async (c) => {
     const identity = getAuth(c);
     const scope = c.req.query('scope') || 'owned';
