@@ -4,7 +4,7 @@ import ThemeMascot from '../components/classroom/ThemeMascot';
 import { Link, useParams } from 'react-router-dom';
 import ThemePicker from '../features/classes/components/ThemePicker';
 import { getClassTheme, classThemeClass } from '../features/classes/classThemes';
-import { updateClassTheme } from '../services/class.service';
+import { updateClassTheme, supportsClassThemes } from '../services/class.service';
 import '../styles/class-themes.css';
 import ClassWorkspaceNav from '../components/classroom/ClassWorkspaceNav';
 import ClassSummary from '../components/classroom/ClassSummary';
@@ -27,6 +27,8 @@ export default function ClassOverview({ role }) {
   const [copyNotice, setCopyNotice] = useState('');
   const [themeSaving, setThemeSaving] = useState(false);
   const [themeEditing, setThemeEditing] = useState(false);
+  const [themeSupported, setThemeSupported] = useState(false);
+  useEffect(() => { let active = true; if (role === 'teacher') supportsClassThemes().then((ok) => { if(active) setThemeSupported(ok); }); return () => { active = false; }; }, [role]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -80,7 +82,7 @@ export default function ClassOverview({ role }) {
         <div><span className="qz-world-banner__label">{theme.name}</span><h2>{theme.short}</h2><p>{theme.subtitle}</p></div>
         <span className="qz-world-banner__art" aria-hidden="true"><ThemeMascot themeId={theme.id} size={86} /></span>
       </section> : null}
-      {role === 'teacher' ? <div className="qz-class-theme-controls">
+      {role === 'teacher' && themeSupported ? <div className="qz-class-theme-controls">
         <button type="button" className={buttonClassName({ variant: 'secondary', size: 'sm' })} onClick={() => setThemeEditing(!themeEditing)} aria-expanded={themeEditing}><Palette size={16} /> {themeEditing ? 'Tutup pilihan tema' : 'Ganti tema kelas'}</button>
         {themeEditing ? <div className="qz-theme-setting"><ThemePicker value={classItem.themeId || 'classic'} onChange={saveTheme} compact />{themeSaving ? <p role="status">Menyimpan tema...</p> : null}</div> : null}
       </div> : null}
