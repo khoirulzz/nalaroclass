@@ -4,6 +4,8 @@ import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, MessageCircle, Pa
 import Brand from '../components/Brand';
 import ClassroomEditorialArt from '../components/landing/ClassroomEditorialArt';
 import WorldShowcase from '../components/landing/WorldShowcase';
+import RealClassroomStory from '../components/landing/RealClassroomStory';
+import '../styles/landing-story.css';
 import '../styles/landing.css';
 
 const formats = [
@@ -62,6 +64,7 @@ export default function Landing({ onEnterApp }) {
             <Reveal className="nlr-chapter nlr-chapter--yellow"><div className="nlr-chapter__top"><span>03 / BERANI MENCOBA</span><ArrowUpRight size={23} /></div><div className="nlr-score-art" aria-hidden="true"><span>coba.</span><span>pahami.</span><span>coba lagi.<i>✳</i></span></div><h3>Belum tepat?<br />Belum selesai.</h3><p>Uji pemahaman lewat kuis mandiri atau main bersama di Nalaro Live. Lihat hasilnya, temukan yang bisa dipelajari lagi.</p></Reveal>
           </div>
         </section>
+        <RealClassroomStory />
         <section className="nlr-classroom" id="fitur"><div className="nlr-wrap">
           <Reveal className="nlr-classroom__heading"><h2>Kamu urus<br /><em>serunya belajar.</em></h2><p>Nalaro bantu merapikan sisanya.</p></Reveal>
           <div className="nlr-classroom__rows">
