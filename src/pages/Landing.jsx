@@ -2,7 +2,8 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, MessageCircle, Pause, Play } from 'lucide-react';
 import Brand from '../components/Brand';
-import LearningArtwork from '../components/LearningArtwork';
+import ClassroomEditorialArt from '../components/landing/ClassroomEditorialArt';
+import WorldShowcase from '../components/landing/WorldShowcase';
 import '../styles/landing.css';
 
 const formats = [
@@ -37,20 +38,21 @@ export default function Landing({ onEnterApp }) {
       <a className="nlr-skip" href="#isi">Lewati navigasi</a>
       <header className="nlr-site-header"><div className="nlr-wrap nlr-site-header__inner">
         <a href="#atas" aria-label="Nalaro Class, ke awal"><Brand /></a>
-        <nav aria-label="Navigasi halaman"><a href="#platform">Ruang belajar</a><a href="#soal">Jelajahi kuis</a></nav>
+        <nav aria-label="Navigasi halaman"><a href="#dunia">Tema kelas</a><a href="#platform">Ruang belajar</a><a href="#soal">Jelajahi kuis</a></nav>
         <button type="button" className="nlr-header-login" onClick={onEnterApp}>Masuk <ArrowUpRight size={18} /></button>
       </div></header>
       <main id="isi">
         <section className="nlr-hero nlr-wrap" id="atas">
           <div className="nlr-hero__copy">
-            <h1>Berawal dari<br />rasa <em>ingin tahu.</em></h1>
-            <p>Ada pertanyaan, ada penemuan. Ada tempat untuk keduanya di kelasmu.</p>
-            <button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Masuk ke Nalaro <ArrowUpRight size={21} /></button>
+            <h1>Belajar punya<br /><em>dunianya sendiri.</em></h1>
+            <p>Ruang belajar yang hidup, dari materi dan diskusi hingga kuis interaktif. Pilih duniamu, temukan cara baru untuk berkembang bersama.</p>
+            <button type="button" className="nlr-action nlr-action--primary" onClick={onEnterApp}>Mulai kelasmu <ArrowUpRight size={21} /></button>
             <a className="nlr-hero__scroll" href="#platform"><span><ArrowDown size={18} /></span>Kenali ruang belajarmu</a>
           </div>
-          <div className="nlr-hero__art"><LearningArtwork /><span className="nlr-art-note">Ide besar boleh dimulai<br />dari pertanyaan kecil.</span></div>
+          <div className="nlr-hero__art"><ClassroomEditorialArt /></div>
           <div className="nlr-hero__foot"><span>Untuk yang mengajar. Untuk yang ingin belajar.</span><button className="nlr-motion-control" type="button" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={14} /> : <Pause size={14} />}{paused ? 'Putar animasi' : 'Jeda animasi'}</button></div>
         </section>
+        <WorldShowcase />
         <div className="nlr-word-strip" aria-hidden="true"><span>bertanya</span><i>↗</i><span>mencoba</span><i>✳</i><span>memahami</span><i>↗</i><span>bertumbuh</span><i>✳</i></div>
         <section className="nlr-journey nlr-wrap" id="platform" aria-labelledby="journey-title">
           <div className="nlr-journey__intro"><span className="nlr-margin-note">Di dalam kelasmu</span><h2 id="journey-title">Pelajaran<br />boleh usai.<br /><em>Penemuan<br />jalan terus.</em></h2><p>Dari materi pertama sampai momen “oh, begitu!”, semuanya punya tempat.</p><a href="#fitur" className="nlr-inline-link">Lihat yang bisa kamu lakukan <ArrowDown size={18} /></a></div>
