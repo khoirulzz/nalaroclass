@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { AddIcon, ErrorIcon } from '../../components/icons';
 import { Button, Dialog, Input, PageHeader, ProcessLoader, Textarea, Toast } from '../../components/ui';
+import ThemePicker from '../../features/classes/components/ThemePicker';
 import ClassCollection from '../../features/classes/components/ClassCollection';
 import { useClasses } from '../../features/classes/hooks/useClasses';
 import { classErrorMessage } from '../../services/class.service';
 
-const initialForm = { name: '', description: '' };
+const initialForm = { name: '', description: '', themeId: 'superhero' };
 
 export default function TeacherClasses() {
   const { classes, status, error, configured, reload, createClass } = useClasses();
@@ -43,7 +44,7 @@ export default function TeacherClasses() {
     setSubmitting(true);
     setSubmitError('');
     try {
-      const created = await createClass({ name, description: form.description.trim() });
+      const created = await createClass({ name, description: form.description.trim(), themeId: form.themeId });
       setDialogOpen(false);
       setForm(initialForm);
       setNotice({ title: 'Kelas berhasil dibuat', message: `${created.name} siap digunakan.` });
@@ -79,6 +80,7 @@ export default function TeacherClasses() {
         <form id="create-class-form" onSubmit={handleSubmit} className="qz-form-stack">
           <Input label="Nama kelas" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="Contoh: Matematika XI A" maxLength={80} error={fieldErrors.name} autoFocus />
           <Textarea label="Deskripsi" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} placeholder="Jelaskan fokus pembelajaran kelas ini." maxLength={400} error={fieldErrors.description} hint={`${form.description.length}/400 karakter`} />
+          <ThemePicker value={form.themeId} onChange={(themeId) => setForm((current) => ({ ...current, themeId }))} />
           {submitError ? <div className="qz-inline-state qz-inline-state--error" role="alert">{submitError}</div> : null}
         </form>
       </Dialog>
