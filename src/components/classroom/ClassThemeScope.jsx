@@ -18,6 +18,13 @@ export default function ClassThemeScope({ children }) {
     }).catch(() => { if (!controller.signal.aborted) setState({ classId, themeId: null }); });
     return () => controller.abort();
   }, [classId]);
+  useEffect(() => {
+    const onThemeChanged = (event) => {
+      if (event.detail?.classId === classId) setState({ classId, themeId: event.detail.themeId });
+    };
+    window.addEventListener('nalaro:class-theme-changed', onThemeChanged);
+    return () => window.removeEventListener('nalaro:class-theme-changed', onThemeChanged);
+  }, [classId]);
   const activeTheme = classId && state.classId === classId ? getClassTheme(state.themeId) : null;
   return <div className={activeTheme ? 'qz-class-world-scope ' + classThemeClass(activeTheme.id) : 'qz-class-world-scope'}>{children}</div>;
 }
