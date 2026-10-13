@@ -1,4 +1,4 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
@@ -22,7 +22,7 @@ import Landing from '/src/pages/Landing.jsx';
 const auth = new URLSearchParams(location.search).has('auth');
 createRoot(document.getElementById('root')).render(<MemoryRouter>{auth ? <Auth onAuthComplete={role => { window.__completed = role; }} /> : <Landing onEnterApp={() => { window.__entered = true; }} />}</MemoryRouter>);
 `);
-const browser = await chromium.launch({ headless: true, executablePath: process.env.NALARO_CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const browser = await chromium.launch({ headless: true, executablePath: process.env.NALARO_CHROME_PATH || chromium.executablePath() });
 try {
 const context = await browser.newContext({ reducedMotion: 'reduce' });
 await context.route('**/*', route => {
@@ -41,7 +41,7 @@ const page = await context.newPage();
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 const url = `${base}/workers/.wrangler/public-ui-artifacts/preview.html`;
-async function goto(auth = false) { await page.goto(`${url}${auth ? '?auth' : ''}`); await page.locator(auth ? '.nlr-auth__form' : '.nlr-hero').waitFor(); await page.evaluate(() => document.fonts.ready); }
+async function goto(auth = false) { await page.goto(`${url}${auth ? '?auth' : ''}`); await page.locator(auth ? '.nlr-auth__form' : '.nc-hero').waitFor(); await page.evaluate(() => document.fonts.ready); }
 async function layout(label) {
   const result = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth, clipped: [...document.querySelectorAll('button,input,h1,h2,h3')].filter(e => { const r=e.getBoundingClientRect(); return r.width && (r.left < -2 || r.right > innerWidth+2 || e.scrollWidth > e.clientWidth+3); }).map(e=>e.textContent || e.tagName) }));
   assert.ok(result.scroll <= result.width, `${label}: document overflow ${JSON.stringify(result)}`);
@@ -51,12 +51,37 @@ const widths = [320, 390, 768, 1024, 1440];
 for (const width of widths) {
   await page.setViewportSize({width,height:900});
   await goto(); await layout(`landing ${width}`);
+  await page.locator('.nc-teacher-visual').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('.nc-teacher-visual img').naturalWidth > 0);
+  await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:path.join(artifacts,`landing-${width}.png`),fullPage:true});
-  for (const name of ['Hotspot gambar','Susun urutan','Pilihan gambar','Pilihan ganda']) {
-    await page.getByRole('button',{name:new RegExp(name)}).click();
+  for (const name of ['Materi','Tugas','Presensi','Diskusi']) {
+    await page.getByRole('tab',{name,exact:true}).click();
+    await page.getByRole('tabpanel').waitFor();
+    await layout(`panel ${name} ${width}`);
+  }
+  for (const name of ['Pilihan gambar','Pilihan ganda']) {
+    await page.getByRole('button',{name,exact:true}).click();
     await layout(`format ${name} ${width}`);
   }
-  await page.getByRole('button',{name:'Masuk ke Nalaro',exact:true}).click();
+  await page.getByRole('button',{name:'Konsumen',exact:false}).click();
+  assert.match(await page.locator('.nc-quiz-response').innerText(),/Coba perhatikan lagi/);
+  await page.getByRole('button',{name:'Produsen',exact:false}).click();
+  assert.match(await page.locator('.nc-quiz-response').innerText(),/Jawabanmu tepat/);
+  for (const name of ['Superhero Academy','Happy Playground','Space Explorers','Fantasy Quest','Creative Studio','Deep Current','Prism City','Paperbound World','Pixel Frontier',"Inventor's Workshop"]) {
+    await page.getByRole('button',{name,exact:true}).click();
+    await layout(`world ${name} ${width}`);
+  }
+  await page.locator('.nc-faq-list summary').filter({hasText:'Apa fungsi Nalaro Assist?'}).click();
+  assert.equal(await page.locator('.nc-faq-list details').last().getAttribute('open'),'');
+  if (width < 761) {
+    const toggle=page.locator('#nc-menu-toggle');
+    await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+    await page.keyboard.press('Escape');
+    assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+  }
+  await page.getByRole('button',{name:'Masuk',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.__entered),true);
   await goto(true);
   for (const role of ['Guru','Siswa']) {
@@ -69,7 +94,7 @@ for (const width of widths) {
   await page.getByRole('button',{name:'Masuk',exact:true}).click();
   await page.getByRole('button',{name:'Guru',exact:true}).click();
   await page.screenshot({path:path.join(artifacts,`auth-${width}.png`),fullPage:true});
-  console.log(`Layout passed: ${width}px, landing, four formats, four auth states`);
+  console.log(`Layout passed: ${width}px, landing, four panels, two formats, ten themes, FAQ, menu, four auth states`);
 }
 // Existing auth behavior remains wired to the same actions and role guard.
 for (const role of ['Guru','Siswa']) {
@@ -114,7 +139,24 @@ await page.evaluate(()=>{window.__fail=true;});
 await page.getByRole('button',{name:'Lanjutkan dengan Google'}).click();
 await page.getByRole('alert').waitFor();
 assert.equal(await page.getByRole('button',{name:'Lanjutkan dengan Google'}).isEnabled(),true);
-// Quotes fade, pause, and reduced-motion fallback.
+// Landing motion pause, keyboard tabs, photo loading, and reduced motion.
+await page.emulateMedia({reducedMotion:'no-preference'});
+await goto();
+await page.getByRole('button',{name:'Jeda animasi',exact:true}).click();
+assert.equal(await page.locator('.nc-float').first().evaluate(e=>getComputedStyle(e).animationPlayState),'paused');
+await page.getByRole('button',{name:'Putar animasi',exact:true}).click();
+await page.getByRole('tab',{name:'Materi',exact:true}).focus();
+await page.keyboard.press('ArrowRight');
+assert.equal(await page.getByRole('tab',{name:'Tugas',exact:true}).getAttribute('aria-selected'),'true');
+await page.keyboard.press('End');
+assert.equal(await page.getByRole('tab',{name:'Diskusi',exact:true}).getAttribute('aria-selected'),'true');
+await page.emulateMedia({reducedMotion:'reduce'});
+assert.equal(await page.locator('.nc-float').first().evaluate(e=>getComputedStyle(e).animationName),'none');
+assert.equal(await page.locator('.nc-motion-control').isVisible(),false);
+assert.equal(await page.locator('.nc-student-photo img').evaluate(e=>e.complete && e.naturalWidth > 0),true);
+await page.locator('.nc-teacher-visual').scrollIntoViewIfNeeded();
+await page.waitForFunction(()=>document.querySelector('.nc-teacher-visual img').naturalWidth > 0);
+// Auth quotes fade, pause, and reduced-motion fallback.
 await page.emulateMedia({reducedMotion:'no-preference'});
 await goto(true);
 await page.getByRole('button',{name:'Jeda catatan belajar'}).click();
@@ -133,7 +175,7 @@ const after=await readFile(path.join(root,'src/pages/Auth.jsx'),'utf8');
 const handlers=s=>s.slice(s.indexOf('const profileSeed'),s.indexOf('  return (\n    <main')).replaceAll('\r','');
 assert.equal(handlers(after.replaceAll('\r','')),handlers(before.replaceAll('\r','')));
 assert.deepEqual(errors,[]);
-console.log('PASS: 45 layout states, 6 auth method/role combinations, guest, role mismatch, confirmation validation, Google failure recovery, motion controls, reduced motion, keyboard skip link, unchanged auth handlers; no browser runtime errors.');
+console.log('PASS: five responsive viewports, four feature panels, two quiz formats with feedback, ten themes, FAQ, mobile menu, 6 auth method/role combinations, guest, role mismatch, confirmation validation, Google failure recovery, motion controls, reduced motion, keyboard skip link, unchanged auth handlers; no browser runtime errors.');
 } finally {
   await browser.close();
 }

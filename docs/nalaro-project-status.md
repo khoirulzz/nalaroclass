@@ -1,6 +1,6 @@
 # Status dan riwayat pengerjaan Nalaro Class
 
-Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus diperbarui setelah setiap tugas selesai. Status mengacu pada kode di repository `hulumzz/Quizzy` dan `khoirulzz/nalaroclass` dan bukti pengujian yang disebutkan; keberadaan kode tidak otomatis berarti fitur sudah lolos uji produksi.
+Terakhir diperiksa: 13 Oktober 2026. Dokumen ini adalah catatan kerja yang harus diperbarui setelah setiap tugas selesai. Status mengacu pada kode di repository `hulumzz/Quizzy` dan `khoirulzz/nalaroclass` dan bukti pengujian yang disebutkan; keberadaan kode tidak otomatis berarti fitur sudah lolos uji produksi.
 
 ## Aturan pembaruan oleh AI
 
@@ -19,6 +19,8 @@ Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus 
 - Remote `url` menunjuk `hulumzz/Quizzy` dan remote `pages` menunjuk `khoirulzz/nalaroclass`. Pengguna mengizinkan sinkronisasi keduanya; push `pages/main` terbukti memicu deployment Pages produksi.
 
 ## Posisi saat ini
+
+**Landing SaaS, 13 Oktober 2026:** rombak total presentasi publik dengan fotografi siswa/guru, hero dengan panel fitur, preview kelas interaktif, demo kuis, ilustrasi tema SVG baru, FAQ, CTA, metadata, dan navigasi mobile. Karakter manusia SVG lama dilepas dari landing. Lint/build dan 31 tes frontend lulus; smoke browser lokal pada 320/390/768/1024/1440 px lulus untuk empat panel, dua format kuis, sepuluh tema, FAQ, menu, keyboard, motion, serta regresi auth sintetis. Tidak ada runtime error atau overflow horizontal. Status commit/push/deploy ditambahkan setelah pengiriman di riwayat di bawah.
 
 **UI landing dan auth, 3 Oktober 2026:** desain editorial terang dengan ilustrasi buku, warna biru/sage/koral, alur scroll bertahap, contoh format kuis interaktif, serta catatan belajar fade pada auth selesai lokal. Logo/nama dipertahankan; handler auth, routing, layanan, dan backend tidak diubah. Lint/build, 26 tes frontend, dan 45 keadaan layout browser lokal 320/390/768/1024/1440 px lulus. Source UI `984d6fe` sudah di-push ke `pages/main` dan aktif di `https://nalaroclass.pages.dev` pada deployment `10479847-26ef-4c6a-8c6f-03c56f54ef9f`. CI validate dan Cloudflare Pages sukses. Browser produksi publik pada 390/1440 px lulus; login Firebase nyata belum diuji ulang.
 
@@ -119,6 +121,13 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 - HTTP/CORS dan tes otomatis tidak menggantikan uji UI browser, transfer Cloudinary nyata, perangkat kamera/lokasi, atau uji beban live.
 
 ## Riwayat perubahan
+
+### 13 Okt 2026 - Landing SaaS dengan fotografi model
+
+- Total redesign mengikuti manfaat pembelajaran konkret, bukan copy puitis. Foto siswa dengan laptop dan guru dengan tablet dibuat melalui built-in imagegen; empat file WebP responsif total sekitar 193 KB. Prompt dan referensi LMS dicatat di `docs/landing-redesign-2026-10-13.md`.
+- Berkas: `src/pages/Landing.jsx`, `src/styles/landing-saas.css`, `src/components/landing/ProductPreview.jsx`, `src/components/landing/LandingQuiz.jsx`, `src/components/landing/WorldShowcase.jsx`, `public/images/landing/`, `src/App.jsx`, `index.html`, dan `workers/scripts/smoke-public-ui.mjs`. Komponen ClassroomEditorialArt/RealClassroomStory serta stylesheet landing-story yang tidak lagi dipakai dihapus. Auth dan dunia interaktif kelas tetap memakai kode sebelumnya.
+- Lint dan build lulus. Peringatan hook LivingWorldEngine dan chunk besar berasal dari kode sebelumnya. 31 tes frontend lulus. Smoke lokal lima viewport, empat panel, sepuluh tema, dua format kuis/umpan balik, FAQ, menu, keyboard, pause/reduced motion, dan auth sintetis lulus. Screenshot desktop/mobile ditinjau; tidak ada runtime error atau overflow. Firebase/Google nyata dan perangkat fisik tidak diuji ulang.
+- Pengiriman: source commit `0accce0` disiapkan pada branch `feat/landing-saas-photography`. Push langsung ke main ditolak automatic approval review karena otorisasi publikasi langsung belum eksplisit; pengiriman dilanjutkan melalui branch dan PR yang dapat diperiksa. Status push/preview ditambahkan setelah sukses. Tidak ada deploy Worker/migrasi database pada tugas ini.
 
 ### 3 Okt 2026 - Rombak UI landing dan auth
 
