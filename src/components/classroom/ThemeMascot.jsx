@@ -1,92 +1,100 @@
 /**
- * Original layered vector character artwork for the five classroom worlds.
- * Pure SVG: crisp at any resolution, tiny payload, no network dependency.
+ * NalaroClass official mascot set — five cohesive, original 2.5D SVG characters.
+ * Simple silhouettes, shared 3.5px round strokes, consistent shadow and highlight.
+ * Designed to remain legible at 48px and 180px without clipping.
  */
+const labels = {
+  superhero: 'Maskot superhero Nalaro dengan jubah koral',
+  playground: 'Maskot awan biru yang bersahabat',
+  space: 'Maskot robot astronaut dengan helm penjelajah',
+  fantasy: 'Maskot rubah dengan mantel petualang',
+  studio: 'Maskot pensil studio kreatif',
+};
+
 export default function ThemeMascot({ themeId = 'superhero', size = 128, className = '' }) {
-  return <svg className={className} width={size} height={size} viewBox="0 0 180 180" role="img" aria-label={ ({
-    superhero: 'Maskot pahlawan orisinal dengan jubah merah',
-    playground: 'Maskot makhluk biru yang ramah',
-    space: 'Maskot astronaut penjelajah galaksi',
-    fantasy: 'Maskot rubah penjelajah hutan',
-    studio: 'Maskot pensil kreatif dengan baret',
-  })[themeId] || 'Maskot kelas'} xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="92" cy="156" rx="61" ry="11" fill="#17243b" opacity=".12"/>
-    {themeId === 'superhero' && <g strokeLinejoin="round" strokeLinecap="round">
-      <path d="M57 113 17 148 55 135 76 148 89 119Z" fill="#d63e4d" stroke="#243a67" strokeWidth="5"/>
-      <path d="m111 114 53 27-42-5-12 17-20-29Z" fill="#fb5d54" stroke="#243a67" strokeWidth="5"/>
-      <path d="M56 111c0-19 19-28 37-28s39 10 39 30l-4 35H61Z" fill="#3268c5" stroke="#26365f" strokeWidth="5"/>
-      <path d="M67 147h23v14H65ZM105 147h22v14h-23Z" fill="#142a63" stroke="#233152" strokeWidth="4"/>
-      <path d="M75 105 50 118l-4 26 20 3 13-21ZM113 105l26 14 4 26-22 2-13-23Z" fill="#e9b384" stroke="#243a67" strokeWidth="4"/>
-      <path d="M91 99 76 122l18 16 17-16Z" fill="#ffca45" stroke="#243a67" strokeWidth="3"/>
-      <path d="m92 109 6 9-6 10-6-10Z" fill="#e84b3e"/>
-      <path d="M54 67c-12-17-3-44 19-49 25-8 53 3 55 26 16 11 13 31 2 38Z" fill="#273a62" stroke="#213052" strokeWidth="4"/>
-      <ellipse cx="93" cy="72" rx="38" ry="41" fill="#e6a478" stroke="#233658" strokeWidth="4"/>
-      <path d="M55 68c8-10 20-12 35-10l5-15c10 18 23 21 36 20" fill="none" stroke="#243a67" strokeWidth="12"/>
-      <path d="M61 73q13-7 27 1v14q-13 9-26-1ZM98 74q14-9 28-2l-2 16q-14 9-26-1Z" fill="#3268c5" stroke="#20305a" strokeWidth="4"/>
-      <path d="M89 79h9" stroke="#20305a" strokeWidth="4"/><circle cx="76" cy="80" r="3.5" fill="#162950"/><circle cx="112" cy="80" r="3.5" fill="#162950"/>
-      <path d="M85 96q10 9 21 0" fill="none" stroke="#8b453a" strokeWidth="4"/>
-      <path d="m28 46 9-15-2 15 11 3-19 11 4-13Z" fill="#ffd14e" stroke="#d48527" strokeWidth="2"/>
+  const t = Object.hasOwn(labels, themeId) ? themeId : 'superhero';
+  const line = '#303B58';
+  return <svg className={className} width={size} height={size} viewBox="0 0 180 180" role="img" aria-label={labels[t]} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id={t + '-light'} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#ffffff" stopOpacity=".65"/><stop offset="1" stopColor="#ffffff" stopOpacity="0"/></linearGradient>
+      <linearGradient id={t + '-dim'} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#152744" stopOpacity="0"/><stop offset="1" stopColor="#152744" stopOpacity=".13"/></linearGradient>
+    </defs>
+    <ellipse cx="90" cy="164" rx="53" ry="8" fill="#233451" opacity=".13"/>
+    {t === 'superhero' && <g stroke={line} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M60 111 31 150l43-13 20 19 20-19 39 12-29-40Z" fill="#e75b4b"/>
+      <path d="M59 127q10-24 31-24c23 0 34 12 38 24l-1 26H54Z" fill="#3569c2"/>
+      <path d="m69 153-3 9 22 2 4-11M109 153l3 9-23 2-3-11" fill="#1d4388"/>
+      <path d="M83 104v21l11 10 10-10v-21" fill="#e8ad83"/>
+      <path d="M57 64q1-40 34-40 37 0 39 41l-10 34H66Z" fill="#263f80"/>
+      <ellipse cx="93" cy="81" rx="35" ry="36" fill="#e9b18c"/>
+      <path d="M57 72q8-28 25-29l10 10q15-13 35-1v20q-10-6-21-5l-13-6-12 8Z" fill="#293d75"/>
+      <path d="M60 81q16-13 29-2l2 16q-18 9-31-2ZM97 78q16-12 29 2v13q-14 11-29 2Z" fill="#416fc4"/>
+      <path d="M90 85h7" fill="none"/><circle cx="75" cy="87" r="3.4" fill="#27304d" stroke="none"/><circle cx="111" cy="86" r="3.4" fill="#27304d" stroke="none"/>
+      <path d="M84 107q9 7 19 0" fill="none" stroke="#9d625c" strokeWidth="3"/>
+      <path d="m93 120 10 10-10 13-10-13Z" fill="#ffd16b"/>
+      <path d="M69 38q21-17 44 1" fill="none" stroke="#647fb9" strokeWidth="5" opacity=".75"/>
     </g>}
-    {themeId === 'playground' && <g strokeLinejoin="round" strokeLinecap="round">
-      <path d="M55 105c-18 1-28 17-20 30l19 7 15-22ZM128 109c21-2 30 14 24 26l-22 10-15-25Z" fill="#7ad3ce" stroke="#427b92" strokeWidth="4"/>
-      <ellipse cx="89" cy="126" rx="55" ry="43" fill="#75c7e4" stroke="#4878a7" strokeWidth="5"/>
-      <path d="M65 146 58 163l25-3 4-13ZM113 146l13 16 20-7-16-19Z" fill="#4ba0c1" stroke="#4878a7" strokeWidth="4"/>
-      <path d="M46 75C25 53 36 30 55 27l27 26ZM123 53c13-29 39-29 43-10l-18 39Z" fill="#8bd5e9" stroke="#4878a7" strokeWidth="5"/>
-      <path d="M54 49c-14-21-6-30 3-35 11 4 18 16 18 30Z" fill="#f1a6cd"/>
-      <path d="M130 43c7-19 16-21 27-18 5 12-2 26-17 34Z" fill="#f1a6cd"/>
-      <ellipse cx="93" cy="89" rx="61" ry="57" fill="#9addf0" stroke="#4878a7" strokeWidth="5"/>
-      <ellipse cx="71" cy="99" rx="13" ry="8" fill="#f5a6c8" opacity=".9"/><ellipse cx="117" cy="98" rx="13" ry="8" fill="#f5a6c8" opacity=".9"/>
-      <ellipse cx="73" cy="77" rx="6" ry="9" fill="#274c66"/><ellipse cx="115" cy="77" rx="6" ry="9" fill="#274c66"/>
-      <circle cx="75" cy="75" r="2.5" fill="#fff"/><circle cx="117" cy="75" r="2.5" fill="#fff"/>
-      <path d="M83 96q11 18 24 0" fill="none" stroke="#39546b" strokeWidth="5"/>
-      <path d="m86 37 8-16 8 16 17 3-13 12-1 14-11-8-12 7 1-14-11-10Z" fill="#ffd974" stroke="#dcb261" strokeWidth="3"/>
+    {t === 'playground' && <g stroke={line} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M64 104 47 144q5 12 18 9l19-21M116 103l17 41q-5 12-18 9l-19-21" fill="#86c7db"/>
+      <path d="M62 122q28-11 56 0l10 33H52Z" fill="#7bd1bf"/>
+      <path d="M47 66Q27 44 47 31q21-10 33 20M117 52q13-30 34-20 20 13-1 36" fill="#9fdbe9"/>
+      <path d="M52 56q3-14 14-13M127 45q11-5 18 7" fill="none" stroke="#f8c1d8" strokeWidth="9"/>
+      <path d="M38 94c-11-23 4-44 30-48 7-20 34-25 49-9 27-4 50 19 43 45 9 23-8 46-31 47H72c-27 0-44-14-34-35Z" fill="#b5e5ed"/>
+      <path d="M44 80q5-25 30-25" fill="none" stroke="#fff" strokeWidth="7" opacity=".66"/>
+      <ellipse cx="67" cy="94" rx="11" ry="7" fill="#f8b8cc" stroke="none"/>
+      <ellipse cx="129" cy="94" rx="11" ry="7" fill="#f8b8cc" stroke="none"/>
+      <ellipse cx="78" cy="80" rx="5" ry="7" fill="#36516c" stroke="none"/><ellipse cx="114" cy="80" rx="5" ry="7" fill="#36516c" stroke="none"/>
+      <path d="M85 99q11 14 22-1" fill="none" stroke="#496078" strokeWidth="4"/>
+      <path d="m98 18 7 12 14 3-11 9 2 14-12-6-12 6 3-14-11-9 14-3Z" fill="#ffde84" strokeWidth="3"/>
     </g>}
-    {themeId === 'space' && <g strokeLinejoin="round" strokeLinecap="round">
-      <path d="M51 116C33 78 52 55 81 51l39 4c28 11 41 37 23 69l-19 28H66Z" fill="#ece8ff" stroke="#6869ae" strokeWidth="5"/>
-      <path d="M56 113 37 120l-4 28 23 7 20-27ZM128 111l24 12-3 25-25 6-19-27Z" fill="#bbb1f5" stroke="#6063a6" strokeWidth="5"/>
-      <path d="m70 143-7 19 24 3 8-18ZM110 146l9 19 25-5-14-20Z" fill="#5969b6" stroke="#555e96" strokeWidth="5"/>
-      <path d="M43 54C46 20 66 8 95 8s49 15 52 49l4 30-15 28H52L38 88Z" fill="#f5f3ff" stroke="#7673bc" strokeWidth="6"/>
-      <ellipse cx="95" cy="74" rx="47" ry="46" fill="#433d85" stroke="#aaa0ea" strokeWidth="5"/>
-      <ellipse cx="95" cy="74" rx="37" ry="37" fill="#b0ddf1"/>
-      <path d="M58 78Q77 31 129 58" fill="none" stroke="#fff" strokeWidth="10" opacity=".55"/>
-      <ellipse cx="95" cy="82" rx="26" ry="27" fill="#e4af89"/>
-      <path d="M76 70q17-18 37 0" fill="none" stroke="#5a4a5c" strokeWidth="10"/>
-      <circle cx="86" cy="82" r="3.5" fill="#392e4e"/><circle cx="105" cy="82" r="3.5" fill="#392e4e"/>
-      <path d="M87 95q8 7 16-1" fill="none" stroke="#8d5e59" strokeWidth="3"/>
-      <circle cx="135" cy="112" r="9" fill="#ffce74" stroke="#6363a5" strokeWidth="3"/>
-      <path d="m22 31 4-13 5 13 13 3-13 6-5 13-4-13-13-6Z" fill="#e8dcff"/>
-      <circle cx="161" cy="39" r="12" fill="#ffcb83"/><path d="M146 40q19-15 31 0" fill="none" stroke="#e9a46a" strokeWidth="3"/>
+    {t === 'space' && <g stroke={line} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M55 121 37 133l3 22 24 1 12-23M125 120l18 13-3 22-24 1-12-23" fill="#a5a9e5"/>
+      <path d="M67 115q25-9 50 0l15 40H51Z" fill="#d5d8f5"/>
+      <path d="m69 154-5 9 21 1 9-10M110 154l6 9 21-1-11-9" fill="#656fc4"/>
+      <path d="M39 83q0-53 53-59 51 3 53 58l-7 36H45Z" fill="#ebeefb"/>
+      <path d="M62 50q28-26 60 1" fill="none" stroke="#fff" strokeWidth="7" opacity=".8"/>
+      <rect x="48" y="58" width="88" height="62" rx="30" fill="#454b91"/>
+      <rect x="56" y="65" width="72" height="49" rx="24" fill="#96cce1"/>
+      <path d="M60 81q18-18 48-15" fill="none" stroke="#e4f7ff" strokeWidth="6" opacity=".7"/>
+      <circle cx="79" cy="90" r="4.2" fill="#344870" stroke="none"/><circle cx="105" cy="90" r="4.2" fill="#344870" stroke="none"/>
+      <path d="M83 103q9 8 18 0" fill="none" stroke="#344870" strokeWidth="3"/>
+      <path d="M93 22V13" fill="none" stroke="#6f77c9" strokeWidth="6"/>
+      <circle cx="93" cy="11" r="6" fill="#ffe299" stroke="#6f77c9" strokeWidth="3"/>
+      <circle cx="126" cy="135" r="7" fill="#fbd9a2"/>
+      <path d="m21 41 4-10 4 10 10 4-10 4-4 10-4-10-10-4Z" fill="#eff6ff" stroke="none"/>
     </g>}
-    {themeId === 'fantasy' && <g strokeLinejoin="round" strokeLinecap="round">
-      <path d="M51 88 37 34 76 56ZM119 54l39-24-10 61Z" fill="#dc9b57" stroke="#704b35" strokeWidth="5"/>
-      <path d="m50 78-7-32 23 15ZM130 58l18-18-8 35Z" fill="#f4c6a0"/>
-      <path d="M45 107c-13 11-18 31-14 46l35 10 19-20Z" fill="#3a8767" stroke="#3c634c" strokeWidth="5"/>
-      <path d="M91 112c-12 15-15 30-9 49h48c8-22 4-41-14-53Z" fill="#337853" stroke="#2b5743" strokeWidth="5"/>
-      <path d="m82 145-13 17 25 4 10-14ZM113 147l11 17 26-10-19-15Z" fill="#70503a" stroke="#453b31" strokeWidth="4"/>
-      <ellipse cx="92" cy="80" rx="57" ry="48" fill="#db9651" stroke="#704b35" strokeWidth="5"/>
-      <path d="M41 77Q91 31 143 76q-9 36-50 44Q51 112 41 77Z" fill="#f8d3a2"/>
-      <path d="M43 66q14-45 48-44c31-3 51 22 56 45l-13-4q-39-24-81 1Z" fill="#3b7857" stroke="#315e49" strokeWidth="5"/>
-      <path d="M82 29q15-15 34 1" fill="none" stroke="#d7b56a" strokeWidth="7"/>
-      <ellipse cx="71" cy="79" rx="6" ry="8" fill="#49352c"/><ellipse cx="115" cy="79" rx="6" ry="8" fill="#49352c"/>
-      <path d="m88 96 10 0-5 7Z" fill="#68453a"/>
-      <path d="M77 110q15 9 32-1" fill="none" stroke="#9b6949" strokeWidth="4"/>
-      <path d="m87 123 11 9 10-9" fill="none" stroke="#d5b263" strokeWidth="6"/>
-      <path d="M123 119 154 105l13 35-31 13Z" fill="#e9c488" stroke="#8b714c" strokeWidth="4"/>
-      <path d="m139 120 12 8-10 12" fill="none" stroke="#a8814f" strokeWidth="3"/>
+    {t === 'fantasy' && <g stroke={line} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M59 117q29-18 61 0l15 38H45Z" fill="#568c68"/>
+      <path d="m63 150-4 14 25 1 6-15M109 150l7 14 24-5-13-14" fill="#735942"/>
+      <path d="M54 69 40 27l43 26M108 52l39-25-10 48" fill="#d98b47"/>
+      <path d="m54 57-6-20 20 15M120 54l16-14-4 24" fill="#f6d2a7" stroke="none"/>
+      <path d="M38 84q0-45 51-48 51 0 57 48l-13 37H55Z" fill="#df9a52"/>
+      <path d="M38 80q2 36 54 45 53-9 54-45-22 21-54 4-32 17-54-4Z" fill="#f8dfbc"/>
+      <path d="M43 68q10-35 47-40 40 0 54 39l-16-4q-37-13-68 3Z" fill="#427a61"/>
+      <path d="M69 73q25-18 47 0" fill="none" stroke="#a5be89" strokeWidth="5"/>
+      <circle cx="72" cy="88" r="4.5" fill="#454033" stroke="none"/><circle cx="115" cy="88" r="4.5" fill="#454033" stroke="none"/>
+      <path d="m88 102 9 0-5 7Z" fill="#7d5540" stroke="none"/>
+      <path d="M82 113q11 7 23-1" fill="none" stroke="#a56d53" strokeWidth="3"/>
+      <path d="m82 126 10 8 11-8" fill="none" stroke="#efcf8c" strokeWidth="6"/>
+      <path d="M129 126l24-11 9 26-23 10Z" fill="#f8e7bf" stroke="#a58858" strokeWidth="3"/>
+      <path d="m140 128 9 4-7 10" fill="none" stroke="#b49461" strokeWidth="3"/>
     </g>}
-    {themeId === 'studio' && <g strokeLinejoin="round" strokeLinecap="round">
-      <path d="M49 108 22 122l2 24 23 1 25-32ZM126 105l31 17-5 24-28-2-19-30Z" fill="#3b79d5" stroke="#243f77" strokeWidth="4"/>
-      <path d="M58 106q32-18 68 1l4 47H52Z" fill="#3c70d7" stroke="#24457d" strokeWidth="5"/>
-      <path d="m65 147-3 17 24 1 8-19ZM107 146l11 19 24-5-12-20Z" fill="#f3a63d" stroke="#89643b" strokeWidth="4"/>
-      <path d="M53 63q2-34 34-41l44 9 8 54-42 50-45-42Z" fill="#ffd27d" stroke="#73523f" strokeWidth="5"/>
-      <path d="M52 63 88 20l22 5-49 65Z" fill="#f9c85b"/>
-      <path d="M100 22 121 2l23 26-21 20Z" fill="#f1716f" stroke="#9e4c5c" strokeWidth="4"/>
-      <path d="m122 3 13-2 12 17-4 12Z" fill="#3154a9"/>
-      <path d="M67 83c8-9 17-9 24-2M105 80c10-9 19-8 26 1" fill="none" stroke="#745444" strokeWidth="3"/>
-      <circle cx="81" cy="90" r="5" fill="#363b5a"/><circle cx="115" cy="91" r="5" fill="#363b5a"/>
-      <path d="M88 108q12 11 26-2" fill="none" stroke="#9c5a4e" strokeWidth="4"/>
-      <path d="M36 45q-19-20-27 4 16 2 24 13Z" fill="#94ce9f"/>
-      <circle cx="150" cy="72" r="13" fill="#f27565"/><circle cx="31" cy="76" r="7" fill="#7fc9d2"/>
+    {t === 'studio' && <g stroke={line} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M58 124 39 136l4 20 22 1 12-19M122 124l19 12-4 20-22 1-12-19" fill="#3875c0"/>
+      <path d="M62 122q30-13 59 0l8 34H53Z" fill="#3975ce"/>
+      <path d="m69 153-5 11 24 1 5-12M105 153l9 12 24-6-12-12" fill="#e8af60"/>
+      <path d="M50 62q2-38 40-41 44 0 47 42l-7 42-39 27-37-27Z" fill="#ffd080"/>
+      <path d="m51 70 24-45q24-16 49 2l17 43-20-11-29-4-27 5Z" fill="#f8bc59"/>
+      <path d="M51 60q16-45 51-44 35-2 46 31" fill="none" stroke="#3667ba" strokeWidth="9"/>
+      <path d="M84 14q29-10 50 13" fill="none" stroke="#80a8dc" strokeWidth="5"/>
+      <rect x="67" y="78" width="51" height="30" rx="15" fill="#fbefce" stroke="none"/>
+      <circle cx="80" cy="89" r="4.3" fill="#303b58" stroke="none"/><circle cx="108" cy="89" r="4.3" fill="#303b58" stroke="none"/>
+      <path d="M85 101q10 9 19 0" fill="none" stroke="#9e765e" strokeWidth="3"/>
+      <path d="m130 42 18-23 11 9-16 23Z" fill="#e97e6b"/>
+      <path d="m148 19 8-10 11 10-8 9Z" fill="#3859a6"/>
+      <path d="m15 73 17-11 10 18-17 11Z" fill="#bdd57c" stroke="none"/>
+      <circle cx="149" cy="92" r="8" fill="#f2af8e" stroke="none"/>
     </g>}
+    <ellipse cx="89" cy="153" rx="37" ry="6" fill={'url(#' + t + '-dim)'} opacity=".25"/>
   </svg>;
 }
