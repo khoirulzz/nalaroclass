@@ -34,6 +34,7 @@ test('D1 classroom migration preserves legacy themes and immutable creation-time
     db.prepare("INSERT INTO users (id,name,role,created_at,updated_at) VALUES ('teacher-1','Pak Ari','teacher','2026-01-01','2026-01-01')").run();
     db.prepare("INSERT INTO classes (id,code,owner_id,name,created_at,updated_at) VALUES ('old-class','ABC234','teacher-1','Kimia','2026-01-01','2026-01-01')").run();
     db.exec(readFileSync(new URL('../migrations/0020_class_theme.sql', import.meta.url), 'utf8'));
+    db.exec(readFileSync(new URL('../migrations/0021_lock_class_theme.sql', import.meta.url), 'utf8'));
     assert.equal(db.prepare("SELECT theme_id FROM classes WHERE id = 'old-class'").get().theme_id, 'classic');
     const adapter = { prepare(sql) { const statement = db.prepare(sql); return { bind(...params) {
       return {
@@ -48,6 +49,9 @@ test('D1 classroom migration preserves legacy themes and immutable creation-time
     assert.equal((await repo.getForUser(newClass.id, 'teacher-1')).themeId, 'space');
     assert.equal((await repo.getForUser(newClass.id, 'teacher-1')).themeId, 'space');
     assert.equal(typeof repo.updateTheme, 'undefined'); // Theme identity is assigned at creation, not edited later.
+    assert.throws(() => db.prepare("UPDATE classes SET theme_id = 'fantasy' WHERE id = ?").run(newClass.id), /THEME_LOCKED/);
+    assert.equal(db.prepare("SELECT theme_id FROM classes WHERE id = ?").get(newClass.id).theme_id, 'space');
+    assert.throws(() => db.prepare("UPDATE classes SET theme_id = 'space' WHERE id = 'old-class'").run(), /THEME_LOCKED/);
     assert.equal((await repo.listOwnedBy('teacher-1')).find((item) => item.id === 'old-class').themeId, 'classic');
   } finally { db.close(); }
 });
