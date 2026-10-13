@@ -23,7 +23,7 @@ export function getWorldEntityBudget({
 export function getFleeVector(creatureX, creatureY, pointerX, pointerY, distance = 64) {
   const deltaX = creatureX - pointerX;
   const deltaY = creatureY - pointerY;
-  const length = Math.hypot(deltaX, deltaY) || 1;
+  const length = Math.hypot(deltaX, deltaY);
   // Deterministic direction for a tap directly at the centre.
   if (length < 0.001) return { x: distance, y: 0 };
   return { x: Math.round((deltaX / length) * distance), y: Math.round((deltaY / length) * distance) };
