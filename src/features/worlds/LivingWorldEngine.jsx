@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getLivingWorld } from './worldCatalog.js';
 import { findNearestCreature, getFleeVector, getWorldEntityBudget } from './worldMotion.js';
 import OceanSprites from './OceanSprites.jsx';
+import ExtendedLivingWorld from './ExtendedLivingWorld.jsx';
+import './living-worlds-extended.css';
 import './living-worlds.css';
 
 /** Deterministic lanes avoid layout jank and hydration/refresh movement jumps. */
@@ -128,6 +130,7 @@ export default function LivingWorldEngine({ themeId, quiet = false }) {
     };
   }, [active, budget.fx, quiet]);
 
+  if (world?.status === 'ready' && world.scene !== 'ocean') return <ExtendedLivingWorld world={world} budget={budget} quiet={quiet} />;
   if (!active) return null;
   return <div className="lw-overlay" ref={overlayRef} aria-hidden="true" data-density={budget.tier} data-quiet={quiet ? 'true' : 'false'}>
     <div className="lw-viewport">
