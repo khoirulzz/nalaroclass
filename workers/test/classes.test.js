@@ -27,7 +27,7 @@ test('class repository scopes the owner query and preserves its public response 
   assert.deepEqual(classes[0], { id: 'class-1', code: 'ABC234', name: 'Kimia', description: '', themeId: 'classic', teacherName: 'Pak Ari', status: 'active', studentsCount: 2, materialsCount: 1, quizzesCount: 3, createdAt: '2026-09-30T00:00:00.000Z', updatedAt: '2026-09-30T00:00:00.000Z', accessRole: 'owner' });
 });
 
-test('D1 classroom migration preserves legacy themes and enforces owner-only theme changes', async () => {
+test('D1 classroom migration preserves legacy themes and immutable creation-time world', async () => {
   const db = new DatabaseSync(':memory:');
   try {
     db.exec(readFileSync(new URL('../migrations/0001_class_foundation.sql', import.meta.url), 'utf8'));
@@ -46,9 +46,8 @@ test('D1 classroom migration preserves legacy themes and enforces owner-only the
     const newClass = await repo.create({ ownerId: 'teacher-1', teacherName: 'Pak Ari', name: 'Fisika', description: 'Energi', themeId: 'space' });
     assert.equal(newClass.themeId, 'space');
     assert.equal((await repo.getForUser(newClass.id, 'teacher-1')).themeId, 'space');
-    await assert.rejects(() => repo.updateTheme(newClass.id, 'student-1', 'fantasy'), (err) => err.status === 403);
-    await repo.updateTheme(newClass.id, 'teacher-1', 'fantasy');
-    assert.equal((await repo.getForUser(newClass.id, 'teacher-1')).themeId, 'fantasy');
+    assert.equal((await repo.getForUser(newClass.id, 'teacher-1')).themeId, 'space');
+    assert.equal(typeof repo.updateTheme, 'undefined'); // Theme identity is assigned at creation, not edited later.
     assert.equal((await repo.listOwnedBy('teacher-1')).find((item) => item.id === 'old-class').themeId, 'classic');
   } finally { db.close(); }
 });
