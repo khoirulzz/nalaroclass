@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { classThemeClass, getClassTheme } from '../../features/classes/classThemes';
 import ClassWorldScene from './ClassWorldScene';
 import '../../styles/class-themes.css';
 import '../../styles/class-world-root.css';
+
+const LivingWorldEngine = lazy(() => import('../../features/worlds/LivingWorldEngine.jsx'));
 
 const sectionNames = {
   sessions: 'Pertemuan', materials: 'Materi', discussions: 'Diskusi',
@@ -41,11 +43,13 @@ export default function ClassThemeScope({ children }) {
   const theme = classId && state.classId === classId ? getClassTheme(state.themeId) : null;
   const isOverview = pathname.endsWith('/overview');
   const section = sectionNames[pathname.split('/')[4]] || 'Ruang belajar';
+  const quiet = /\/(?:materials|quizzes|tasks|sessions)\/[^/]+/.test(pathname) || /\/analytics\/[^/]+/.test(pathname);
 
   return <div
     className={theme ? 'qz-class-world-scope ' + classThemeClass(theme.id) : 'qz-class-world-scope'}
     data-world={theme?.id}
   >
+    {theme?.id === 'deep-current' ? <Suspense fallback={null}><LivingWorldEngine themeId={theme.id} quiet={quiet} /></Suspense> : null}
     {theme && !isOverview ? <section className="qz-world-ribbon" aria-label={'Identitas tema ' + theme.name}>
       <div className="qz-world-ribbon__copy">
         <span className="qz-world-ribbon__eyebrow">{theme.name} <span aria-hidden="true">/</span> {section}</span>

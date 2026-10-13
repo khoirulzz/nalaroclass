@@ -2,7 +2,7 @@ import { HttpError, badRequest, forbidden } from '../http/errors.js';
 import { json } from '../http/response.js';
 import { assertAccountRole, getAuth, requireAuth } from '../middleware/auth.js';
 import { ClassRepository } from '../repositories/class.repository.js';
-import { validateClassId, validateCreateClass, validateJoinClass } from '../validation/classes.js';
+import { CLASS_THEME_IDS, validateClassId, validateCreateClass, validateJoinClass } from '../validation/classes.js';
 
 const MAX_BODY_BYTES = 4_096;
 
@@ -25,7 +25,7 @@ export function registerClassRoutes(app, { repositoryFactory = (env) => new Clas
   const repository = (c) => repositoryFactory(c.env);
   app.get('/classes/capabilities', requireAuth, async (c) => {
     const migration = await c.env.DB.prepare("SELECT name FROM pragma_table_info('classes') WHERE name = 'theme_id'").first();
-    return json(c, 200, { data: { themeSelection: Boolean(migration) } });
+    return json(c, 200, { data: { themeSelection: Boolean(migration), themeIds: migration ? CLASS_THEME_IDS : ['classic'] } });
   });
   app.get('/classes', requireAuth, async (c) => {
     const identity = getAuth(c);

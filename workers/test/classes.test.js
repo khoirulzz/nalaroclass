@@ -10,6 +10,8 @@ test('class validation retains the API contract limits and code normalization', 
   assert.deepEqual(validateJoinClass({ code: ' abc234 ' }), { code: 'ABC234' });
   assert.equal(validateCreateClass({ name: 'Geografi', themeId: 'space' }).themeId, 'space');
   assert.equal(validateClassTheme('fantasy'), 'fantasy');
+  assert.equal(validateCreateClass({ name: 'Ocean Biology', themeId: 'deep-current' }).themeId, 'deep-current');
+  assert.throws(() => validateClassTheme('prism-city'), (error) => error.code === 'INVALID_THEME');
   assert.throws(() => validateClassTheme('unknown'), (error) => error.code === 'INVALID_THEME');
   assert.throws(() => validateCreateClass({ name: 'A' }), (error) => error.code === 'VALIDATION_ERROR');
   assert.throws(() => validateJoinClass({ code: 'invalid' }), (error) => error.code === 'VALIDATION_ERROR');

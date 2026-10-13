@@ -1,8 +1,10 @@
+import DeepCurrentArtwork from '../../features/worlds/DeepCurrentArtwork.jsx';
 /**
  * Five bespoke scalable classroom environments. Decorative, self-contained SVG:
  * no image network requests, no blurry raster scaling, and no borrowed characters.
  */
 export default function ClassWorldScene({ themeId, className = '' }) {
+  if (themeId === 'deep-current') return <DeepCurrentArtwork className={className} />;
   return <svg className={className} viewBox="0 0 400 190" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
     {themeId === 'superhero' && <g strokeLinejoin="round">
       <circle cx="284" cy="80" r="64" fill="#ffd46b" opacity=".92" />
