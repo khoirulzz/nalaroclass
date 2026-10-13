@@ -12,7 +12,7 @@ export default function WorldShowcase() {
       <div className="nlr-worlds__heading"><p>Sepuluh dunia. Satu tempat belajar.</p><h2 id="worlds-title">Kelasmu, <em>karaktermu.</em></h2><span>Guru memilih dunia kelas. Semua siswa merasakan pengalaman yang sama, dari materi sampai kuis.</span></div>
       <div className="nlr-worlds__layout">
         <div className="nlr-worlds__tabs" role="group" aria-label="Pilih preview tema kelas">
-          {CLASS_THEMES.map((item, index) => <button key={item.id} type="button" aria-pressed={active === item.id} onClick={() => setActive(item.id)}><span>0{index + 1}</span><strong>{item.name}</strong><ArrowUpRight size={18} /></button>)}
+          {CLASS_THEMES.map((item, index) => <button key={item.id} type="button" aria-pressed={active === item.id} onClick={() => setActive(item.id)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.name}</strong><ArrowUpRight size={18} /></button>)}
         </div>
         <div className={`nlr-worlds__stage qz-theme-${theme.id}`} key={theme.id} aria-live="polite">
           <div className="nlr-worlds__window"><div className="nlr-worlds__window-top"><span className="nlr-worlds__window-dots"><i/><i/><i/></span><span>nalaroclass / kelas 7A</span><Palette size={16}/></div>
