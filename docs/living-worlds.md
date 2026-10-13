@@ -1,14 +1,14 @@
 # NalaroClass — Living Worlds Implementation Blueprint
 
-**Phase:** Deep Current pilot implemented; four worlds scaffolded but not released.
+**Phase:** All five Living Worlds implemented, including independent Deep Current anemones.
 **Last updated:** 2026-10-13.
 **Scope:** `/:role/classes/:classId/*` only; global dashboards, account pages, and existing five themes remain unchanged.
 
 ## 1. Contract and rollout
 
 - `src/features/worlds/worldCatalog.js` is the source of truth for Living World art direction, texture, character and effects manifests.
-- World `status: 'ready'` is the **only** status eligible for `CLASS_THEMES` (see `src/features/classes/classThemes.js`). Currently only `deep-current`.
-- `status: 'planned'` worlds are **not** selectable and are not accepted by the Worker.
+- World `status: 'ready'` is the **only** status eligible for `CLASS_THEMES` (see `src/features/classes/classThemes.js`). All five are ready and registered; the UI still waits for the deployed Worker's reported theme IDs.
+- `status: 'planned'` remains supported for future worlds; all five current worlds are `ready`.
 - Worker `workers/src/validation/classes.js` enumerates only completed theme IDs. This protects permanent theme identity in D1.
 - `GET /classes/capabilities` advertises `themeIds`. Teacher class creation shows a new Living World only after the deployed Worker lists it, maintaining compatibility when Pages deploys before the Worker. No database migrations are required.
 - Theme cannot be edited after creating the class; the existing `trg_classes_theme_immutable` D1 trigger continues to enforce this.
@@ -17,12 +17,12 @@
 
 ```text
 ClassThemeScope  (gets stored themeId from existing class API)
- ├── ClassWorldScene / DeepCurrentArtwork  (static SVG hero)
+ ├── ClassWorldScene / DeepCurrentArtwork / LivingWorldArtwork  (static SVG heroes)
  ├── LivingWorldEngine  (React.lazy; imported only for ready worlds)
  │    ├── worldCatalog + worldMotion (pure JS, tested)
- │    ├── OceanSprites (custom SVG fish and jellyfish)
- │    ├── CSS-driven ambient animation (fish, bubbles, lights)
- │    ├── pointerdown event listener on class root (passive)
+ │    ├── OceanSprites / LivingWorldSprites (marine, crystal, origami, pixel, robot)
+ │    ├── CSS-driven ambient animation (fish, bubbles, anemones, origami, shards, sprites, gears)
+ │    ├── pointerdown event listener on class root (passive, never blocks controls)
  │    └── Web Animations API (one-shot flee) + CSS one-shot ripple
  └── Class modules (existing LMS components unchanged)
 ```
@@ -38,7 +38,7 @@ z-index 1   class navigation, reading content, quiz inputs, cards
 z-index 6   ambient overlay with pointer-events:none
 ```
 
-The overlay has **no hitbox**. A passive pointerdown listener on the actual classroom root checks screen coordinates against the closest SVG creature's bounding box. It animates an inner `lw-reaction` wrapper, **never calls preventDefault or stopPropagation**, and therefore leaves native links, buttons and touch scrolling functional. Limit a reaction to the nearest creature within 90px (mobile) or 145px (desktop).
+Each scene overlay has **no hitbox**. A passive pointerdown listener on the actual classroom root checks screen coordinates against the closest SVG creature's bounding box. It animates an inner `lw-reaction` wrapper, **never calls preventDefault or stopPropagation**, and therefore leaves native links, buttons and touch scrolling functional. Limit a reaction to the nearest creature within 90px (mobile) or 145px (desktop).
 
 For high-concentration actions (reading a material, answering a quiz/task), `quiet` mode automatically keeps only one fish and up to three bubbles, with reduced opacity, and skips pointer reactions.
 
@@ -60,9 +60,9 @@ Initial rendering uses conservative hints from viewport, CPU concurrency, availa
 - Do not add translucent animated blur layers, video backgrounds, WebGL or Three.js.
 - Use deterministic arrays, not random positions created on every render.
 
-## 5. Art and component contracts for the next four worlds
+## 5. Art and component contracts for new worlds
 
-Each new world requires:
+Each new future world requires:
 
 1. Fill/extend its `worldCatalog.js` preset, keeping `status:'planned'` until visual QA.
 2. Build original static environment artwork, theme tokens and a custom SVG sprite vocabulary. No generic mascot reused from other worlds.
@@ -75,10 +75,10 @@ Each new world requires:
 
 | World ID | Material & atmosphere | Ambient | Tap response |
 | --- | --- | --- | --- |
-| `prism-city` | Faceted mosaic, cut-corner cards | Floating shards, refractive glints | Small facet scatter / regroup |
-| `paperbound` | Paper fibres, offset layers, bookmark tabs | Origami birds, paper leaves | Short paper flutter / flee |
-| `pixel-frontier` | Pixel-block terrain, stepped borders | Sprites, pixel clouds | Burst of pixel squares and sprite run |
-| `inventors-workshop` | Blueprint grid, mechanical panels | Robot walkers, slow gears | Circuit pulse and bot avoidance |
+| `prism-city` | Faceted mosaic, cut-corner cards | Floating shards, refractive glints | Small crystal flee / ring burst |
+| `paperbound` | Paper fibres, offset layers, bookmark tabs | Origami birds, paper leaves | Origami flee / paper ring |
+| `pixel-frontier` | Pixel-block terrain, stepped borders | Stepped sprites, pixel fragments | Stepped sprite retreat / pixel ring |
+| `inventors-workshop` | Blueprint grid, mechanical panels | Robot walkers, slow gears | Circuit ring / robot retreat |
 
 Only the runtime's **visual behavior** varies. All LMS material/task/quiz data flows remain the existing backend APIs.
 
@@ -91,5 +91,7 @@ Only the runtime's **visual behavior** varies. All LMS material/task/quiz data f
 - Check no horizontal overflow, no fish blocking focus rings or labels, and text contrast.
 - Test on `prefers-reduced-motion: reduce`, a narrow device and with a hidden tab.
 - Check Cloudflare Pages branch preview before merging.
-- **Worker must be deployed from the same main commit** to make `deep-current` selectable; the frontend gates the option based on API capabilities so older Workers still work.
+- **Worker must advertise all ten theme IDs** for the five Living Worlds to appear in teacher class creation; the frontend gates new options based on API capabilities so older Workers still work.
 - No D1 migration and no additional Worker, Durable Object or WebSocket deployment for the animation engine.
+- Anemone clusters are individually anchored SVG groups with independent duration, direction and negative phase offset; disabled under reduced-motion.
+- Five ready-world environments share a single browser-only world motion policy and separate material skins.
