@@ -277,3 +277,28 @@
   .lw-overlay .lw-fish-tail { animation:none; }
   .lw-overlay .lw-water-rays { opacity:.18; }
 }
+
+
+/* Different anemones respond to different parts of the imagined current.
+ * Independent cycles, phases and amplitudes avoid a synchronized waving wall.
+ * SVG transform-box and bottom pivot keep stems attached to the seabed. */
+.lw-anemone {
+  transform-box:fill-box;
+  transform-origin:50% 100%;
+  animation:lw-anemone-sway var(--lw-sway-time,9s) ease-in-out var(--lw-sway-delay,0s) infinite alternate;
+}
+.lw-anemone--a {--lw-sway-time:8.3s;--lw-sway-delay:-3.8s;--lw-sway-angle:4.7deg;}
+.lw-anemone--b {--lw-sway-time:11.6s;--lw-sway-delay:-7.9s;--lw-sway-angle:-5.8deg;}
+.lw-anemone--c {--lw-sway-time:7.1s;--lw-sway-delay:-5.2s;--lw-sway-angle:3.4deg;}
+.lw-anemone--d {--lw-sway-time:10.2s;--lw-sway-delay:-1.6s;--lw-sway-angle:-4.2deg;}
+.lw-anemone--e {--lw-sway-time:9.6s;--lw-sway-delay:-6.6s;--lw-sway-angle:5.2deg;}
+.lw-anemone--f {--lw-sway-time:12.4s;--lw-sway-delay:-4.4s;--lw-sway-angle:-3.6deg;}
+@keyframes lw-anemone-sway {
+  0% {transform:rotate(calc(var(--lw-sway-angle) * -.75)) skewX(-.45deg);}
+  48% {transform:rotate(calc(var(--lw-sway-angle) * .22)) skewX(.35deg);}
+  100% {transform:rotate(var(--lw-sway-angle)) skewX(.75deg);}
+}
+.lw-overlay[data-paused="true"] .lw-anemone {animation-play-state:paused;}
+@media (prefers-reduced-motion:reduce) {
+  .lw-anemone {animation:none!important;transform:none!important;}
+}
