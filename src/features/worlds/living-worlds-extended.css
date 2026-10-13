@@ -1,0 +1,348 @@
+/* Living Worlds: four individually art-directed material systems.
+ * The existing class-world-root.css owns component selectors; variables below
+ * also apply to materials, quizzes, tasks, attendance, insights and navigation.
+ * CSS/WAAPI motion only; SVG objects never intercept classroom controls. */
+
+.qz-theme-prism-city {
+ --world:#c9d2ff;--world-ink:#f5f3ff;--world-surface:#263365;
+ --world-edge:#7b87cb;--world-radius:4px 24px 5px 20px;
+ --world-shadow:7px 9px 0 #141a4659;--world-glow:#f2abd0;
+}
+.qz-theme-paperbound {
+ --world:#785f46;--world-ink:#41392f;--world-surface:#f7ecd9;
+ --world-edge:#c9af8e;--world-radius:6px 21px 5px 16px;
+ --world-shadow:4px 6px 0 #bba48a;--world-glow:#ead59f;
+}
+.qz-theme-pixel-frontier {
+ --world:#365d88;--world-ink:#263b54;--world-surface:#eaf4e5;
+ --world-edge:#658aa5;--world-radius:2px;--world-shadow:6px 6px 0 #4d7396;
+ --world-glow:#d7efc3;
+}
+.qz-theme-inventors-workshop {
+ --world:#2e6b81;--world-ink:#294956;--world-surface:#e6f1ea;
+ --world-edge:#7fa5a2;--world-radius:6px 6px 19px 6px;
+ --world-shadow:4px 5px 0 #89b5b1;--world-glow:#f0cf94;
+}
+
+/* PRISM CITY: cut facets, moiré-like radial geometry, jewel glass, sharp shadows. */
+.qz-class-world-scope.qz-theme-prism-city[data-world] {
+ color-scheme:dark;
+ --world-canvas:#212b5c;
+ --world-canvas-texture:
+  conic-gradient(from 42deg at 10% 8%,#4e3a87aa 0 54deg,transparent 54deg 140deg,#224c85aa 140deg 210deg,transparent 210deg),
+  linear-gradient(120deg,#202e66,#383465 50%,#1c3567);
+ --world-top-texture:linear-gradient(145deg,#c6a4fe14 19%,transparent 19% 48%,#88d5ea12 48% 63%,transparent 63%);
+ --world-card:linear-gradient(137deg,#313b77,#252f63);
+ --world-feature-card:linear-gradient(128deg,#494680,#303968);
+ --world-empty-card:#343d73;
+ --world-nav:linear-gradient(112deg,#393979,#2a3c72);
+ --world-hero:linear-gradient(112deg,#4a3879,#303c78 52%,#3e4e94);
+ --world-hero-ink:#f6f5ff; --world-hero-label:#f9d5ee;
+ --world-card-radius:3px 27px 4px 21px;
+ --world-nav-radius:4px 24px 4px 19px;
+ --world-tab-radius:3px 14px 2px 12px;
+ --world-hero-radius:5px 46px 5px 36px;
+ --world-control-radius:3px 14px 2px 11px;
+ --world-radius-sm:4px;--world-radius-md:8px;--world-radius-lg:19px;--world-radius-xl:26px;
+ --world-card-shadow:6px 7px 0 #151a4d80;
+ --world-soft-shadow:3px 4px 0 #151a4d55;
+ --world-hover-shadow:9px 10px 0 #151a4d99;
+ --world-hero-shadow:9px 10px 0 #17205a;
+ --world-button-shadow:3px 4px 0 #15204f;
+ --world-active-shadow:3px 3px 0 #ffffff30;
+ --world-frame-border:2px solid #acb5f2;
+ --qz-bg:#212b5c;--qz-surface:#303d72;--qz-surface-soft:#3a467d;
+ --qz-surface-muted:#394578;--qz-surface-raised:#434c87;
+ --qz-border:#6677ae;--qz-border-strong:#99a5d4;
+ --qz-text:#f6f6ff;--qz-text-secondary:#e1e5fa;--qz-text-muted:#c7d1ea;
+ --qz-primary:#c8d6ff;--qz-primary-hover:#eff0ff;--qz-primary-soft:#41487f;--qz-primary-contrast:#1f285a;
+ --qz-success:#a6eed7;--qz-success-soft:#24524b;
+ --qz-warning:#ffe5b8;--qz-warning-soft:#544267;
+ --qz-danger:#ffb3cc;--qz-danger-soft:#5f3658;
+ --qz-info:#b5eaff;--qz-info-soft:#2c5271;
+ --qz-text-inverse:#232b59;
+}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-card,.qz-quiz-card,.qz-material-card,.qz-task-card,.qz-content-card,.qz-session-card) {
+ border:2px solid #a9a8e0;
+ border-radius:var(--world-card-radius);
+ background:var(--world-card);
+ box-shadow:var(--world-card-shadow);
+}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-world-ribbon,
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-world-banner {background:var(--world-hero);border:2px solid #c3b8ee;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-class-nav a.active {background:#d8e0ff;color:#202c63;transform:skewX(-4deg);}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-class-nav a:hover:not(.active) {background:#565c97;color:#fff;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-badge--primary {background:#494785;color:#e9eaff;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-page-header h1 {letter-spacing:-.06em;font-weight:900;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-content-card--featured,.qz-quiz-card--feature,.qz-insight-metric--primary) {background:var(--world-feature-card);}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-card__body p,.qz-reader-blocks,.qz-task-card p,.qz-insight-metric span) {color:var(--qz-text-secondary);}
+
+/* PAPERBOUND: paper fibres, layered cut-outs, journal bookmark navigation. */
+.qz-class-world-scope.qz-theme-paperbound[data-world] {
+ --world-canvas:#f4e8d6;
+ --world-canvas-texture:
+  repeating-linear-gradient(0deg,#947b5410 0px,#947b5410 1px,transparent 1px,transparent 7px),
+  radial-gradient(ellipse at 83% 0,#f9f0e0,#eddcc4 88%);
+ --world-top-texture:radial-gradient(#997d5822 .7px,transparent .7px) 0 0/17px 17px;
+ --world-card:#fff8e9;--world-feature-card:linear-gradient(130deg,#fff7e5,#e9efd9);
+ --world-empty-card:#fff3dd;--world-nav:#fdf1da;
+ --world-hero:linear-gradient(115deg,#faecd3,#e5dcc5 72%,#d4e4d1);
+ --world-hero-ink:#3a4039;--world-hero-label:#745334;
+ --world-card-radius:5px 19px 6px 20px;
+ --world-nav-radius:7px 7px 22px 9px;--world-tab-radius:4px 4px 13px 4px;
+ --world-hero-radius:10px 38px 12px 34px;--world-control-radius:4px 16px 5px 14px;
+ --world-radius-sm:5px;--world-radius-md:9px;--world-radius-lg:20px;--world-radius-xl:28px;
+ --world-card-shadow:3px 5px 0 #b5a38a66,0 13px 30px #8c786529;
+ --world-soft-shadow:2px 3px 0 #b9aa9477;
+ --world-hover-shadow:5px 8px 0 #a9917788,0 16px 28px #7c655034;
+ --world-hero-shadow:5px 8px 0 #bba68888;
+ --world-button-shadow:3px 4px 0 #b8a18c;
+ --world-active-shadow:2px 3px 0 #76695055;
+ --world-frame-border:2px solid #baa17e;
+ --qz-bg:#f4e8d6;--qz-surface:#fff8e9;--qz-surface-soft:#f7ecd9;
+ --qz-surface-muted:#fbf1df;--qz-border:#d3bea4;--qz-border-strong:#b7a386;
+ --qz-text:#40392f;--qz-text-secondary:#5f5345;--qz-text-muted:#6e6252;
+ --qz-primary:#735b42;--qz-primary-hover:#59452f;--qz-primary-soft:#e9d9bd;--qz-primary-contrast:#fffdf7;
+ --qz-success:#356b4f;--qz-success-soft:#dce9d9;
+ --qz-info:#366c87;--qz-info-soft:#d7e9e9;
+ --qz-warning:#996d31;--qz-warning-soft:#f6e6ca;
+ --qz-danger:#a94e4e;--qz-danger-soft:#f8e0d9;
+}
+.qz-class-world-scope.qz-theme-paperbound[data-world] :is(.qz-card,.qz-material-card,.qz-task-card,.qz-session-card,.qz-content-card) {
+ border:1px solid #cbb69a;
+ border-radius:var(--world-card-radius);
+ background:var(--world-card);
+ box-shadow:var(--world-card-shadow);
+}
+.qz-class-world-scope.qz-theme-paperbound[data-world] .qz-class-nav {border-bottom:4px double #aa8d70;}
+.qz-class-world-scope.qz-theme-paperbound[data-world] .qz-class-nav a {border-top:3px solid transparent;}
+.qz-class-world-scope.qz-theme-paperbound[data-world] .qz-class-nav a.active {
+ background:#f8e6c3;color:#483927;border-color:#a88f6d;border-top-color:#9c7652;
+ box-shadow:2px 4px 0 #a88f6d55;
+}
+.qz-class-world-scope.qz-theme-paperbound[data-world] :is(.qz-world-banner,.qz-world-ribbon) {background:var(--world-hero);}
+.qz-class-world-scope.qz-theme-paperbound[data-world] :is(.qz-world-banner h2,.qz-page-header h1,.qz-section-header h2) {
+ font-family:Georgia,'Times New Roman',serif;letter-spacing:-.024em;
+}
+.qz-class-world-scope.qz-theme-paperbound[data-world] :is(.qz-quiz-card--feature,.qz-content-card--featured,.qz-insight-metric--primary) {background:var(--world-feature-card);}
+
+/* PIXEL FRONTIER: intentional step edges, block shadow, discrete sprite motion. */
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] {
+ --world-canvas:#e8f3e8;
+ --world-canvas-texture:
+  repeating-linear-gradient(90deg,#5b83a50c 0 2px,transparent 2px 18px),
+  linear-gradient(#f0f8ee,#dfede2 90%);
+ --world-top-texture:repeating-linear-gradient(0deg,#b6d8e733 0 12px,transparent 12px 44px);
+ --world-card:#fffdf4;--world-feature-card:linear-gradient(180deg,#fff8dd,#e5f2db);
+ --world-empty-card:#f5f7e8;--world-nav:#f7f8e8;
+ --world-hero:linear-gradient(135deg,#d4e8e8,#e5ecc5);
+ --world-hero-ink:#244960;--world-hero-label:#2d6275;
+ --world-card-radius:3px;--world-nav-radius:3px;--world-tab-radius:3px;--world-hero-radius:3px;
+ --world-control-radius:3px;
+ --world-radius-sm:3px;--world-radius-md:3px;--world-radius-lg:3px;--world-radius-xl:3px;
+ --world-card-shadow:6px 6px 0 #537c8b73;
+ --world-soft-shadow:3px 3px 0 #688b9277;
+ --world-hover-shadow:9px 9px 0 #40708b;
+ --world-hero-shadow:8px 8px 0 #3c668c;
+ --world-button-shadow:3px 3px 0 #2f5570;
+ --world-active-shadow:3px 3px 0 #5b8791;
+ --world-frame-border:3px solid #375c7a;
+ --qz-bg:#e8f3e8;--qz-surface:#fffdf4;--qz-surface-soft:#e9f4df;--qz-surface-muted:#f2f6e7;
+ --qz-border:#acc1bd;--qz-border-strong:#789999;
+ --qz-text:#293e4e;--qz-text-secondary:#4e5c57;--qz-text-muted:#586c65;
+ --qz-primary:#345d89;--qz-primary-hover:#244a73;--qz-primary-soft:#dceaf1;--qz-primary-contrast:#fff;
+ --qz-success:#42765b;--qz-success-soft:#e2efd9;
+ --qz-info:#416d93;--qz-info-soft:#e2eef8;
+ --qz-warning:#906621;--qz-warning-soft:#fff0c9;
+ --qz-danger:#9a4344;--qz-danger-soft:#f8dcda;
+}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] :is(.qz-card,.qz-material-card,.qz-task-card,.qz-content-card,.qz-quiz-card) {
+ border:2px solid #587d8f;border-radius:3px;box-shadow:var(--world-card-shadow);
+}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] :is(.qz-world-banner,.qz-world-ribbon) {border:3px solid #365c7a;}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] .qz-class-nav a.active {
+ background:#3e6e91;color:#fff;border:2px solid #2b4f72;box-shadow:3px 3px 0 #6e9792;
+}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] .qz-page-header h1 {
+ font-weight:900;letter-spacing:-.045em;
+}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] .qz-world-ribbon__eyebrow,
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] .qz-world-banner__label {font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;}
+.qz-class-world-scope.qz-theme-pixel-frontier[data-world] :is(.qz-quiz-card--feature,.qz-content-card--featured,.qz-insight-metric--primary) {background:var(--world-feature-card);}
+
+/* INVENTOR'S WORKSHOP: drafting grid, modular mechanism panels, brass accents. */
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] {
+ --world-canvas:#e5f0eb;
+ --world-canvas-texture:
+  linear-gradient(#5b90a31b 1px,transparent 1px) 0 0/29px 29px,
+  linear-gradient(90deg,#5b90a31b 1px,transparent 1px) 0 0/29px 29px,
+  linear-gradient(135deg,#e4f3ef,#d5e7e3);
+ --world-top-texture:radial-gradient(ellipse at 76% 0,#e9c28b55,transparent 55%);
+ --world-card:linear-gradient(130deg,#fffdf4,#edf4eb);
+ --world-feature-card:linear-gradient(112deg,#fffaf0,#dcece3);
+ --world-empty-card:#f6f4e8;--world-nav:#fcfcf4;
+ --world-hero:linear-gradient(115deg,#d4e5db,#f4dfbe);
+ --world-hero-ink:#254d57;--world-hero-label:#34697d;
+ --world-card-radius:5px 5px 23px 5px;--world-nav-radius:6px 6px 20px 6px;
+ --world-tab-radius:5px 5px 13px 5px;--world-hero-radius:6px 6px 46px 6px;
+ --world-control-radius:5px 5px 16px 5px;
+ --world-radius-sm:5px;--world-radius-md:8px;--world-radius-lg:21px;--world-radius-xl:29px;
+ --world-card-shadow:3px 5px 0 #85a6a288,0 11px 23px #507a8626;
+ --world-soft-shadow:2px 3px 0 #7899975c;
+ --world-hover-shadow:6px 7px 0 #638f8f80,0 15px 29px #4d7a803b;
+ --world-hero-shadow:8px 8px 0 #8eada6;
+ --world-button-shadow:3px 3px 0 #6d9792;
+ --world-active-shadow:3px 3px 0 #4d8882;
+ --world-frame-border:2px solid #4f8c8b;
+ --qz-bg:#e5f0eb;--qz-surface:#fffdf4;--qz-surface-soft:#e7f2e9;--qz-surface-muted:#edf4e9;
+ --qz-border:#b7d1c7;--qz-border-strong:#83aba5;
+ --qz-text:#2a4650;--qz-text-secondary:#4d6263;--qz-text-muted:#586e6c;
+ --qz-primary:#29677e;--qz-primary-hover:#20546a;--qz-primary-soft:#d3e9e4;--qz-primary-contrast:#fff;
+ --qz-success:#2f7459;--qz-success-soft:#d9eee0;
+ --qz-info:#2b6684;--qz-info-soft:#d8e9f2;
+ --qz-warning:#986c32;--qz-warning-soft:#f6e9d0;
+ --qz-danger:#a45048;--qz-danger-soft:#f6ddda;
+}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] :is(.qz-card,.qz-material-card,.qz-task-card,.qz-content-card,.qz-quiz-card) {
+ border:2px solid #86aaa4;border-radius:var(--world-card-radius);box-shadow:var(--world-card-shadow);
+}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] .qz-class-nav {
+ border:2px solid #7fa5a1;
+}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] .qz-class-nav a.active {
+ background:#28677c;color:#fff;border:1px solid #1d5267;
+}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] :is(.qz-world-banner,.qz-world-ribbon) {background:var(--world-hero);}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] .qz-world-ribbon__eyebrow,
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] .qz-world-banner__label {
+ font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;
+}
+.qz-class-world-scope.qz-theme-inventors-workshop[data-world] :is(.qz-quiz-card--feature,.qz-content-card--featured,.qz-insight-metric--primary) {background:var(--world-feature-card);}
+
+/* Universal contrast bridge: inherited dark-space components and user inputs.
+ * Prism is dark, other three use their scoped light card inks. */
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(
+ .qz-input,.qz-textarea,.qz-select,.qz-button--secondary,.qz-icon-button
+) {background:#354577;color:#f3f4ff;border-color:#8b9ac9;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(
+ .qz-reader-blocks,.qz-reader-blocks h2,.qz-reader-blocks h3,.qz-card__body p,
+ .qz-content-card__meta,.qz-question-preview,.qz-attempt-navigator button
+) {color:#eef0ff;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-attempt-navigator button,.qz-question-preview) {
+ background:#364574;border-color:#8398cb;
+}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-badge--primary {
+ color:#f1e5ff;background:#494578;
+}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-attendance-session__meta > span,.qz-discussion-replies,.qz-insight-revision) {
+ color:#f4f6ff;background:#3a4979;border-color:#7d8dc3;
+}
+.qz-class-world-scope.qz-theme-prism-city[data-world] :is(.qz-quiz-status,.qz-question-points) {color:#ffe1b5;}
+.qz-class-world-scope.qz-theme-prism-city[data-world] .qz-reader-blocks blockquote {
+ color:#f4efff;background:#504b83;
+}
+
+/* Each gallery card previews the actual material rather than a re-skinned base. */
+.qz-theme-choice.qz-theme-prism-city {background:#2a376d;color:#f5f2ff;border-radius:4px 25px 4px 22px;}
+.qz-theme-choice.qz-theme-prism-city .qz-theme-choice__scene {background:linear-gradient(120deg,#49447d,#293c79);border:1px solid #a59ad8;border-radius:4px 19px 4px 16px;}
+.qz-theme-choice.qz-theme-prism-city .qz-theme-choice__detail {color:#e6e9ff;opacity:1;}
+.qz-theme-choice.qz-theme-prism-city .qz-theme-choice__check {background:#cfd4ff;color:#202b56;}
+.qz-class-card.qz-theme-prism-city {border:2px solid #7a8fbf;border-radius:4px 26px 4px 22px;box-shadow:6px 7px 0 #3b417a88;}
+.qz-class-card.qz-theme-prism-city .qz-class-card__top {background:linear-gradient(110deg,#343d84,#653f81);}
+.qz-class-card.qz-theme-prism-city .qz-class-card__world-name {color:#5747aa;}
+.qz-theme-choice.qz-theme-paperbound {background:#f7e9d5;border:2px solid #c7b293;border-radius:7px 21px 6px 18px;box-shadow:3px 5px 0 #b19b7f80;}
+.qz-theme-choice.qz-theme-paperbound .qz-theme-choice__scene {background:repeating-linear-gradient(0deg,#d6b99414 0 1px,transparent 1px 8px),#eadbc6;border-radius:5px 19px 5px 15px;}
+.qz-theme-choice.qz-theme-paperbound .qz-theme-choice__check {background:#755c42;color:#fff;}
+.qz-class-card.qz-theme-paperbound {border:2px solid #bea685;border-radius:7px 21px 6px 19px;box-shadow:4px 6px 0 #b8a38b;}
+.qz-class-card.qz-theme-paperbound .qz-class-card__top {background:#eedec2;}
+.qz-class-card.qz-theme-paperbound .qz-class-card__world-name {color:#785f46;}
+.qz-theme-choice.qz-theme-pixel-frontier {background:#eaf4e5;border:2px solid #668ca0;border-radius:2px;box-shadow:5px 5px 0 #89a9a7;}
+.qz-theme-choice.qz-theme-pixel-frontier .qz-theme-choice__scene {background:linear-gradient(#c9e8f2,#9accb7);border-radius:2px;}
+.qz-theme-choice.qz-theme-pixel-frontier .qz-theme-choice__check {background:#3d688c;color:#fff;border-radius:2px;}
+.qz-class-card.qz-theme-pixel-frontier {border:2px solid #62889b;border-radius:2px;box-shadow:6px 6px 0 #61879c;}
+.qz-class-card.qz-theme-pixel-frontier .qz-class-card__top {background:linear-gradient(#d2e9e6,#9cbfa2);}
+.qz-class-card.qz-theme-pixel-frontier .qz-class-card__world-name {color:#355f86;}
+.qz-theme-choice.qz-theme-inventors-workshop {background:#e6f1e9;border:2px solid #81aaa4;border-radius:5px 5px 21px 5px;box-shadow:4px 5px 0 #a9c3b9;}
+.qz-theme-choice.qz-theme-inventors-workshop .qz-theme-choice__scene {
+ background:linear-gradient(#508d9b29 1px,transparent 1px) 0 0/20px 20px,linear-gradient(90deg,#508d9b29 1px,transparent 1px) 0 0/20px 20px,#d9e9df;
+ border-radius:4px 4px 17px 4px;
+}
+.qz-theme-choice.qz-theme-inventors-workshop .qz-theme-choice__check {background:#286780;color:#fff;}
+.qz-class-card.qz-theme-inventors-workshop {border:2px solid #83a8a0;border-radius:5px 5px 22px 5px;box-shadow:5px 6px 0 #a2bdb0;}
+.qz-class-card.qz-theme-inventors-workshop .qz-class-card__top {background:linear-gradient(110deg,#cae2df,#e7d9b9);}
+.qz-class-card.qz-theme-inventors-workshop .qz-class-card__world-name {color:#28647d;}
+
+/* Cross-world overlay. No hit targets: clicks always reach LMS controls. */
+.lw-overlay--prism,.lw-overlay--paper,.lw-overlay--pixel,.lw-overlay--workshop {pointer-events:none;}
+.lw-environment {position:absolute;inset:0;pointer-events:none;opacity:.3;}
+.lw-overlay--prism .lw-environment {
+ background:linear-gradient(146deg,transparent 18%,#c3a6fa0d 18% 21%,transparent 21% 52%,#72badd12 52% 60%,transparent 60%);
+}
+.lw-overlay--paper .lw-environment {
+ background:repeating-linear-gradient(155deg,#ae947414 0 1px,transparent 1px 31px);
+}
+.lw-overlay--pixel .lw-environment {
+ background:repeating-linear-gradient(0deg,transparent 0 38px,#6ea39a1a 38px 42px);
+}
+.lw-overlay--workshop .lw-environment {
+ background:linear-gradient(#5d90a21c 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,#5d90a21c 1px,transparent 1px) 0 0/40px 40px;
+}
+.lw-world-creature {
+ position:absolute;left:0;top:var(--lw-y);
+ width:var(--lw-width);pointer-events:none;opacity:.62;
+ animation:lw-swim-right var(--lw-duration) linear var(--lw-delay) infinite;
+}
+.lw-world-creature--reverse {animation-name:lw-swim-left;}
+.lw-world-creature .lw-reaction {display:block;}
+.lw-world-creature .lw-world-character {display:block;transform:translate3d(0,0,0);animation:lw-world-bob 5s ease-in-out infinite alternate;}
+.lw-world-creature--reverse .lw-world-character {transform:scaleX(-1);}
+.lw-world-creature svg {display:block;width:100%;height:auto;filter:drop-shadow(0 5px 6px #0002);}
+.lw-overlay--paper .lw-world-creature {opacity:.64;}
+.lw-overlay--pixel .lw-world-creature {opacity:.67;animation-timing-function:steps(16,end);}
+.lw-overlay--pixel .lw-world-creature svg {filter:drop-shadow(4px 4px 0 #1f465038);}
+.lw-overlay--workshop .lw-world-creature {opacity:.65;}
+@keyframes lw-world-bob {from {translate:0 -3px;} to {translate:0 5px;}}
+.lw-world-particle {
+ position:absolute;left:var(--p-x);top:var(--p-y);
+ width:var(--p-size);height:var(--p-size);
+ opacity:.27;pointer-events:none;
+ animation:lw-world-drift var(--p-dur) ease-in-out var(--p-delay) infinite alternate;
+}
+@keyframes lw-world-drift {
+ from {transform:translate3d(-9px,5px,0) rotate(-12deg);}
+ to {transform:translate3d(16px,-22px,0) rotate(13deg);}
+}
+.lw-world-particle--prism {
+ background:#c6a8ec;border:1px solid #edf7ff;
+ clip-path:polygon(50% 0,100% 35%,76% 100%,18% 94%,0 39%);
+ box-shadow:0 0 0 2px #fff4;
+}
+.lw-world-particle--paper {
+ background:#f5e1c4;border:1px solid #b29b78;
+ clip-path:polygon(0 14%,83% 0,100% 78%,21% 100%);
+ box-shadow:3px 5px 0 #7a64482a;
+}
+.lw-world-particle--pixel {
+ background:#82b9b5;
+ border:3px solid #6e9d9c;image-rendering:pixelated;
+ animation-timing-function:steps(7,end);
+}
+.lw-world-particle--workshop {
+ border:3px dashed #629ba3;border-radius:50%;
+ background:#d6b88644;
+ animation:lw-gear var(--p-dur) linear var(--p-delay) infinite;
+}
+@keyframes lw-gear {to{transform:rotate(360deg);}}
+.lw-touch-ripple--prism {border-radius:3px;transform:rotate(45deg);border-color:#ffe6ff;}
+.lw-touch-ripple--paper {border-radius:5px 20px 5px 20px;border-color:#9c816b;}
+.lw-touch-ripple--pixel {border-radius:0;border:4px solid #527ea0;animation-timing-function:steps(6,end);}
+.lw-touch-ripple--workshop {border:2px dashed #39778a;}
+.lw-overlay[data-quiet="true"] .lw-world-creature {opacity:.19;}
+.lw-overlay[data-quiet="true"] .lw-world-particle {opacity:.1;}
+@media(max-width:700px) {
+ .lw-world-creature {opacity:.42;}
+ .lw-world-particle {opacity:.18;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .lw-overlay :is(.lw-world-creature,.lw-world-particle) {display:none;animation:none;}
+}
