@@ -7,7 +7,7 @@ export function validateClassId(value) {
   return value;
 }
 
-export const CLASS_THEME_IDS = Object.freeze(['classic', 'superhero', 'playground', 'space', 'fantasy', 'studio', 'deep-current']);
+export const CLASS_THEME_IDS = Object.freeze(['classic', 'superhero', 'playground', 'space', 'fantasy', 'studio', 'deep-current', 'prism-city', 'paperbound', 'pixel-frontier', 'inventors-workshop']);
 export function validateClassTheme(themeId) {
   if (!CLASS_THEME_IDS.includes(themeId)) throw badRequest('INVALID_THEME', 'Tema kelas tidak tersedia.');
   return themeId;
