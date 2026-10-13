@@ -508,3 +508,49 @@
   { transition:none; animation:none; }
   .qz-class-world-scope[data-world] :is(.qz-card, .qz-material-card, .qz-quiz-card, .qz-task-card):hover { transform:none; }
 }
+
+
+/* Higher-specificity bridge for the original overview CSS.
+   Prevent old hardcoded page styles from overriding the new world tokens. */
+.qz-class-world-scope[data-world] .qz-themed-workspace .qz-overview-grid .qz-card {
+  border-color: var(--qz-border-strong);
+  border-radius: var(--world-card-radius);
+  background: var(--world-card);
+  box-shadow: var(--world-card-shadow);
+}
+.qz-class-world-scope[data-world] .qz-themed-workspace .qz-overview-grid .qz-class-empty {
+  background: var(--world-empty-card);
+}
+.qz-class-world-scope.qz-theme-space[data-world] { color:var(--qz-text); }
+.qz-class-world-scope.qz-theme-space[data-world] .qz-world-banner {
+  background:var(--world-hero);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-quiz-card--feature {
+  background:var(--world-feature-card);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-content-card--featured {
+  background:var(--world-feature-card);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-attendance-session__meta > span {
+  background:var(--qz-surface-muted);
+  color:var(--qz-text-secondary);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-attendance-session__meta strong {
+  color:var(--qz-text);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-insight-revision :is(strong,span),
+.qz-class-world-scope.qz-theme-space[data-world] .qz-insight-revision > svg {
+  color:var(--qz-text-secondary);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-discussion-message__body > p {
+  color:var(--qz-text-secondary);
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-reader-blocks blockquote {
+  border-left-color:#bdb6ff;
+}
+.qz-class-world-scope.qz-theme-space[data-world] .qz-input::placeholder {
+  color:#b8c9e1;
+}
+.qz-class-world-scope[data-world] :is(.qz-insight-method,.qz-insight-status,.qz-attendance-recap,.qz-class-summary-card) {
+  color:var(--qz-text);
+}
