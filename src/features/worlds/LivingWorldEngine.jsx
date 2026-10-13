@@ -140,9 +140,17 @@ export default function LivingWorldEngine({ themeId, quiet = false }) {
           <path d="M0 95q120-38 245-16 120 27 240-6 150-35 303 11 168-22 412-17v58H0Z" fill="#126c79"/>
           <path d="M0 115q80-19 200-9t230-10 210 12 250-15 310 5v27H0Z" fill="#248d87"/>
           <g fill="none" strokeLinecap="round">
-            <path d="M80 120Q50 71 76 44M83 119Q98 79 128 66M265 124Q244 89 255 51M288 121Q310 78 336 74" stroke="#6db59e" strokeWidth="10"/>
-            <path d="M980 125Q955 68 976 37M1006 125Q1032 78 1050 54M1120 125Q1099 72 1118 41" stroke="#e8a49a" strokeWidth="10"/>
-            <path d="M620 125Q607 90 587 79M623 125Q648 82 659 69" stroke="#8fd0b0" strokeWidth="9"/>
+            <g className="lw-anemone lw-anemone--a"><path d="M80 120Q50 71 76 44M83 119Q98 79 128 66" stroke="#6db59e" strokeWidth="10"/></g>
+            <g className="lw-anemone lw-anemone--c"><path d="M265 124Q244 89 255 51M288 121Q310 78 336 74" stroke="#6db59e" strokeWidth="10"/></g>
+            <g className="lw-anemone lw-anemone--b"><path d="M980 125Q955 68 976 37M1006 125Q1032 78 1050 54" stroke="#e8a49a" strokeWidth="10"/></g>
+            <g className="lw-anemone lw-anemone--d"><path d="M1120 125Q1099 72 1118 41" stroke="#e8a49a" strokeWidth="10"/></g>
+            <g className="lw-anemone lw-anemone--e"><path d="M620 125Q607 90 587 79M623 125Q648 82 659 69" stroke="#8fd0b0" strokeWidth="9"/></g>
+            <g className="lw-anemone lw-anemone--f" stroke="#e6a8a0" strokeWidth="8">
+              <path d="M438 125Q416 101 419 68M445 125Q445 90 463 61M455 125Q474 100 482 83"/>
+              <circle cx="419" cy="68" r="6" fill="#f5b5a3" stroke="none"/>
+              <circle cx="463" cy="61" r="6" fill="#ffd0ae" stroke="none"/>
+              <circle cx="482" cy="83" r="6" fill="#f5b5a3" stroke="none"/>
+            </g>
           </g>
           <path d="m424 110 8-17 12 13 16-5-7 18 8 13-17-7-13 10-1-19Z" fill="#eec08d"/>
         </svg>
