@@ -5,6 +5,16 @@ export async function listClasses({ scope = 'owned', signal } = {}) {
   return data?.classes || [];
 }
 
+/** Compatible with previously deployed Workers that do not expose themeIds. */
+export async function getClassThemeCapabilities({ signal } = {}) {
+  try {
+    const data = await apiRequest('/classes/capabilities', { signal });
+    return Array.isArray(data?.themeIds) ? data.themeIds : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function createClass(input) {
   const data = await apiRequest('/classes', { method: 'POST', body: input });
   return data.class;
