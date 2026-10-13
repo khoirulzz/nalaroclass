@@ -20,6 +20,9 @@ export default function ExtendedLivingWorld({ world, budget, quiet = false }) {
   const rootRef = useRef(null);
   const still = budget.tier === 'still';
   const creatureCount = still ? 0 : quiet ? 1 : budget.fish;
+  const travelPaths = PATHS.slice(0,creatureCount).map((path,index) => world.scene === 'workshop'
+    ? { ...path, y: 68 + (index % 3) * 9 }
+    : path);
   const particleCount = still ? 0 : quiet ? Math.min(3,budget.bubbles) : budget.bubbles;
   useEffect(() => {
     const root = rootRef.current;
@@ -76,7 +79,7 @@ export default function ExtendedLivingWorld({ world, budget, quiet = false }) {
         className={'lw-world-particle lw-world-particle--'+world.scene}
         style={{'--p-x':item.x+'%','--p-y':item.y+'%','--p-size':item.w+'px',
           '--p-dur':item.d+'s','--p-delay':(-i*3.3)+'s'}} />)}
-      {PATHS.slice(0,creatureCount).map((path)=><span key={path.id}
+      {travelPaths.map((path)=><span key={path.id}
         className={'lw-world-creature '+(path.reverse?'lw-world-creature--reverse':'')}
         data-lw-creature="true"
         style={{'--lw-y':path.y+'%','--lw-duration':path.duration+'s',
