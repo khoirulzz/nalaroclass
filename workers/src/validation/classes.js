@@ -7,9 +7,9 @@ export function validateClassId(value) {
   return value;
 }
 
-const THEMES = ['classic', 'superhero', 'playground', 'space', 'fantasy', 'studio'];
+export const CLASS_THEME_IDS = Object.freeze(['classic', 'superhero', 'playground', 'space', 'fantasy', 'studio', 'deep-current']);
 export function validateClassTheme(themeId) {
-  if (!THEMES.includes(themeId)) throw badRequest('INVALID_THEME', 'Tema kelas tidak tersedia.');
+  if (!CLASS_THEME_IDS.includes(themeId)) throw badRequest('INVALID_THEME', 'Tema kelas tidak tersedia.');
   return themeId;
 }
 export function validateCreateClass(input) {
