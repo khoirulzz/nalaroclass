@@ -99,14 +99,6 @@ export class ClassRepository {
     return publicClass(classItem, { accessRole: 'member', joinedAt: membership.joined_at });
   }
 
-  async updateTheme(classId, ownerId, themeId) {
-    const existing = await this.db.prepare('SELECT owner_id FROM classes WHERE id = ?1').bind(classId).first();
-    if (!existing) throw notFound('Kelas tidak ditemukan.');
-    if (existing.owner_id !== ownerId) throw forbidden('Hanya pemilik kelas yang dapat mengubah tema.');
-    await this.db.prepare('UPDATE classes SET theme_id = ?1, updated_at = ?2 WHERE id = ?3').bind(themeId, new Date().toISOString(), classId).run();
-    return this.getForUser(classId, ownerId);
-  }
-
   async listMembers(classId, ownerId) {
     const classItem = await this.db.prepare('SELECT owner_id FROM classes WHERE id = ?1').bind(classId).first();
     if (!classItem) throw notFound('Kelas tidak ditemukan.');

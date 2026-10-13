@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { BarChart3, Palette } from 'lucide-react';
-import ThemeMascot from '../components/classroom/ThemeMascot';
+import { BarChart3 } from 'lucide-react';
+import ClassWorldScene from '../components/classroom/ClassWorldScene';
 import { Link, useParams } from 'react-router-dom';
-import ThemePicker from '../features/classes/components/ThemePicker';
 import { getClassTheme, classThemeClass } from '../features/classes/classThemes';
-import { updateClassTheme } from '../services/class.service';
 import '../styles/class-themes.css';
 import ClassWorkspaceNav from '../components/classroom/ClassWorkspaceNav';
 import ClassSummary from '../components/classroom/ClassSummary';
@@ -25,8 +23,6 @@ export default function ClassOverview({ role }) {
   const { classId } = useParams();
   const [state, setState] = useState({ status: 'loading', classItem: null, members: [], error: null });
   const [copyNotice, setCopyNotice] = useState('');
-  const [themeSaving, setThemeSaving] = useState(false);
-  const [themeEditing, setThemeEditing] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -52,18 +48,6 @@ export default function ClassOverview({ role }) {
 
   const classItem = state.classItem;
   const theme = getClassTheme(classItem.themeId);
-  const saveTheme = async (themeId) => {
-    if (themeSaving) return;
-    setThemeSaving(true);
-    try {
-      const updated = await updateClassTheme(classId, themeId);
-      setState((current) => ({ ...current, classItem: updated }));
-      window.dispatchEvent(new CustomEvent('nalaro:class-theme-changed', { detail: { classId, themeId: updated.themeId } }));
-      setCopyNotice('Tema kelas berhasil diperbarui untuk seluruh anggota.');
-      setThemeEditing(false);
-    } catch (error) { setCopyNotice(classErrorMessage(error)); }
-    finally { setThemeSaving(false); }
-  };
   const copyCode = async () => {
     try {
       await navigator.clipboard.writeText(classItem.code);
@@ -78,13 +62,8 @@ export default function ClassOverview({ role }) {
       <ClassWorkspaceNav role={role} classId={classId} />
       {theme ? <section className="qz-world-banner" aria-label={'Tema kelas ' + theme.name}>
         <div><span className="qz-world-banner__label">{theme.name}</span><h2>{theme.short}</h2><p>{theme.subtitle}</p></div>
-        <span className="qz-world-banner__art" aria-hidden="true"><ThemeMascot themeId={theme.id} size={86} /></span>
+        <span className="qz-world-banner__art" aria-hidden="true"><ClassWorldScene themeId={theme.id} /></span>
       </section> : null}
-      {role === 'teacher' ? <div className="qz-class-theme-controls">
-        <button type="button" className={buttonClassName({ variant: 'secondary', size: 'sm' })} onClick={() => setThemeEditing(!themeEditing)} aria-expanded={themeEditing}><Palette size={16} /> {themeEditing ? 'Tutup pilihan tema' : 'Ganti tema kelas'}</button>
-        {themeEditing ? <div className="qz-theme-setting"><ThemePicker value={classItem.themeId || 'classic'} onChange={saveTheme} compact />{themeSaving ? <p role="status">Menyimpan tema...</p> : null}</div> : null}
-      </div> : null}
-
       <ClassSummary classItem={classItem} role={role} onCopyCode={copyCode} />
       {copyNotice ? <div className="qz-inline-state" role="status">{copyNotice}</div> : null}
 

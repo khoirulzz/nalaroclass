@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, MembersIcon, QuizIcon } from '../../../components/icons';
-import ThemeMascot from '../../../components/classroom/ThemeMascot';
+import ClassWorldScene from '../../../components/classroom/ClassWorldScene';
+import '../../../styles/class-world-gallery.css';
 import { getClassTheme, classThemeClass } from '../classThemes';
 import '../../../styles/class-themes.css';
 import Badge from '../../../components/ui/Badge';
@@ -12,10 +13,11 @@ export default function ClassCard({ classItem, role = 'teacher' }) {
   return (
     <Link to={`${basePath}/${classItem.id}/overview`} className={`qz-class-card qz-tone-${tones[colorIndex]} ${classThemeClass(classItem.themeId)}`}>
       <div className="qz-class-card__top">
-        <span className="qz-class-card__icon">{getClassTheme(classItem.themeId) ? <ThemeMascot themeId={classItem.themeId} size={52} /> : <span aria-hidden="true">◆</span>}</span>
+        {getClassTheme(classItem.themeId) ? <span className="qz-class-card__world" aria-hidden="true"><ClassWorldScene themeId={classItem.themeId} /></span> : <span className="qz-class-card__icon" aria-hidden="true">◆</span>}
         <Badge tone="primary">{classItem.status === 'active' ? 'Kelas aktif' : 'Tidak aktif'}</Badge>
       </div>
       <div className="qz-class-card__body">
+        {getClassTheme(classItem.themeId) ? <span className="qz-class-card__world-name">{getClassTheme(classItem.themeId).name}</span> : null}
         <h3>{classItem.name}</h3>
         <p>{classItem.description || 'Belum ada deskripsi kelas.'}</p>
         {role === 'student' ? <p>{classItem.teacherName || 'Guru Nalaro'}</p> : <p>Kode kelas · {classItem.code}</p>}
