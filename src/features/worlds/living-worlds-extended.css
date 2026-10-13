@@ -346,3 +346,52 @@
 @media(prefers-reduced-motion:reduce) {
  .lw-overlay :is(.lw-world-creature,.lw-world-particle) {display:none;animation:none;}
 }
+
+
+/* Editorial landing demo: each environment changes the actual fake classroom
+ * material and card grammar, not only the hero banner's accent. */
+.nlr-worlds__stage:is(.qz-theme-prism-city,.qz-theme-paperbound,.qz-theme-pixel-frontier,.qz-theme-inventors-workshop) .nlr-worlds__character {
+  transform:none;overflow:hidden;display:grid;place-items:center;
+  width:min(40%,195px);height:125px;background:transparent;
+}
+.nlr-worlds__stage:is(.qz-theme-prism-city,.qz-theme-paperbound,.qz-theme-pixel-frontier,.qz-theme-inventors-workshop) .nlr-worlds__character svg {
+  width:100%;height:100%;filter:none;
+}
+.nlr-worlds__stage:is(.qz-theme-prism-city,.qz-theme-paperbound,.qz-theme-pixel-frontier,.qz-theme-inventors-workshop) .nlr-worlds__character>span {display:none;}
+.nlr-worlds__stage.qz-theme-prism-city {background:#283367;border-radius:5px 33px 5px 22px;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__window {border-radius:4px 23px 4px 17px;border:2px solid #8e8ed0;background:#f4f3ff;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__hero {background:linear-gradient(115deg,#363a80,#644884);border:2px solid #c2b3ef;border-radius:4px 26px 4px 22px;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__hero :is(h3,p) {color:#fbf7ff;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__hero>div>span:first-child {color:#fbd4f2;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__cta {background:#d1ddff;color:#243064;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__cards>div {border:2px solid #aca9df;border-radius:3px 17px 3px 14px;box-shadow:3px 4px 0 #656fa080;}
+.nlr-worlds__stage.qz-theme-prism-city .nlr-worlds__cards svg {color:#615bb7;}
+.nlr-worlds__stage.qz-theme-paperbound {background:#e9d7bd;border-radius:9px 27px 8px 23px;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__window {background:#fff9eb;border-radius:7px 23px 9px 19px;border:2px solid #b9a17f;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__window-body {background:repeating-linear-gradient(0deg,#a8896010 0 1px,transparent 1px 9px),#fff9ec;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__hero {background:linear-gradient(130deg,#eedabf,#dfe6d2);border:2px solid #c6aa83;border-radius:8px 25px 9px 20px;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__hero :is(h3,p) {color:#41392e;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__hero h3 {font-family:Georgia,serif;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__cta {background:#775b41;color:white;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__cards>div {background:#fff4df;border:1px solid #c3ad8f;border-radius:5px 19px 7px 13px;box-shadow:2px 4px 0 #c2aa8b;}
+.nlr-worlds__stage.qz-theme-paperbound .nlr-worlds__cards svg {color:#796043;}
+.nlr-worlds__stage.qz-theme-pixel-frontier {background:#aed3d3;border-radius:3px;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__window {background:#f3f9ed;border-radius:3px;border:3px solid #4f7592;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__hero {background:linear-gradient(#c1e2eb,#dcefc7);border:3px solid #567b90;border-radius:3px;box-shadow:4px 4px 0 #4f7d95;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__hero :is(h3,p) {color:#2a4960;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__cta {background:#396b91;color:white;border-radius:3px;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__cards>div {border:2px solid #6795a1;border-radius:3px;box-shadow:4px 4px 0 #76a29e;}
+.nlr-worlds__stage.qz-theme-pixel-frontier .nlr-worlds__cards svg {color:#3f7390;}
+.nlr-worlds__stage.qz-theme-inventors-workshop {background:#d5e8e3;border-radius:5px 5px 24px 5px;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__window {background:#f6f8ec;border:2px solid #68979a;border-radius:5px 5px 19px 5px;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__window-body {
+ background:linear-gradient(#5b9ba615 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,#5b9ba615 1px,transparent 1px) 0 0/26px 26px,#f7faf1;
+}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__hero {background:linear-gradient(120deg,#d8e7df,#eedfbe);border:2px solid #6d9a98;border-radius:5px 5px 28px 5px;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__hero :is(h3,p) {color:#2d5058;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__cta {background:#2e6c82;color:white;border-radius:3px 3px 11px 3px;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__cards>div {background:#fffdf3;border:2px solid #91b5aa;border-radius:4px 4px 18px 4px;box-shadow:3px 4px 0 #9eb8a9;}
+.nlr-worlds__stage.qz-theme-inventors-workshop .nlr-worlds__cards svg {color:#326d7d;}
+@media(max-width:700px) {
+  .nlr-worlds__stage:is(.qz-theme-prism-city,.qz-theme-paperbound,.qz-theme-pixel-frontier,.qz-theme-inventors-workshop) .nlr-worlds__character {height:82px;width:85px;}
+}
