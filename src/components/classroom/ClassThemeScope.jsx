@@ -49,7 +49,7 @@ export default function ClassThemeScope({ children }) {
     className={theme ? 'qz-class-world-scope ' + classThemeClass(theme.id) : 'qz-class-world-scope'}
     data-world={theme?.id}
   >
-    {theme?.id === 'deep-current' ? <Suspense fallback={null}><LivingWorldEngine themeId={theme.id} quiet={quiet} /></Suspense> : null}
+    {theme?.collection === 'living-worlds' ? <Suspense fallback={null}><LivingWorldEngine themeId={theme.id} quiet={quiet} /></Suspense> : null}
     {theme && !isOverview ? <section className="qz-world-ribbon" aria-label={'Identitas tema ' + theme.name}>
       <div className="qz-world-ribbon__copy">
         <span className="qz-world-ribbon__eyebrow">{theme.name} <span aria-hidden="true">/</span> {section}</span>

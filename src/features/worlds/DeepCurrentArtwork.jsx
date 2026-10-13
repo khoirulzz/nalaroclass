@@ -21,12 +21,12 @@ export default function DeepCurrentArtwork({ className = '' }) {
       <circle cx="486" cy="35" r="3"/><circle cx="502" cy="63" r="4"/>
     </g>
     <g strokeLinecap="round" strokeLinejoin="round">
-      <path d="M42 264Q38 206 27 164 M49 265Q59 202 84 180 M60 267Q77 223 100 210" fill="none" stroke="#70bea5" strokeWidth="10"/>
-      <path d="M515 266Q504 209 486 170 M532 267Q540 206 574 166 M548 268Q567 218 605 197" fill="none" stroke="#7bd0a9" strokeWidth="9"/>
+      <g className="lw-anemone lw-anemone--a"><path d="M42 264Q38 206 27 164 M49 265Q59 202 84 180 M60 267Q77 223 100 210" fill="none" stroke="#70bea5" strokeWidth="10"/></g>
+      <g className="lw-anemone lw-anemone--b"><path d="M515 266Q504 209 486 170 M532 267Q540 206 574 166 M548 268Q567 218 605 197" fill="none" stroke="#7bd0a9" strokeWidth="9"/></g>
       <path d="M63 266v-56M63 243Q31 224 33 200M65 244Q94 226 105 202" fill="none" stroke="#358d86" strokeWidth="8"/>
-      <path d="M152 269Q157 228 132 202M151 248Q175 211 174 184M154 260Q195 250 215 210M154 264Q126 231 107 229" fill="none" stroke={'url(#' + id + '-coral)'} strokeWidth="10"/>
+      <g className="lw-anemone lw-anemone--c"><path d="M152 269Q157 228 132 202M151 248Q175 211 174 184M154 260Q195 250 215 210M154 264Q126 231 107 229" fill="none" stroke={'url(#' + id + '-coral)'} strokeWidth="10"/></g>
       <path d="M153 263Q153 231 146 210M176 217Q176 198 183 183" fill="none" stroke="#ffdbbc" strokeWidth="3" opacity=".7"/>
-      <path d="M402 268Q398 224 422 195M401 251Q382 219 374 199M410 260Q442 254 453 217 M401 258Q391 241 365 244" fill="none" stroke="#a5d1a7" strokeWidth="12"/>
+      <g className="lw-anemone lw-anemone--d"><path d="M402 268Q398 224 422 195M401 251Q382 219 374 199M410 260Q442 254 453 217 M401 258Q391 241 365 244" fill="none" stroke="#a5d1a7" strokeWidth="12"/></g>
       <path d="M276 268Q265 244 248 239 M279 266Q283 223 284 211M285 262Q310 244 321 222" stroke="#5ed1be" fill="none" strokeWidth="9"/>
     </g>
     <g fill="#ffd399" stroke="#a87475" strokeWidth="2.5" strokeLinejoin="round" transform="translate(334 256) rotate(-16)">

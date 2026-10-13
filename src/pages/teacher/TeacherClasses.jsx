@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AddIcon, ErrorIcon } from '../../components/icons';
 import { Button, Dialog, Input, PageHeader, ProcessLoader, Textarea, Toast } from '../../components/ui';
 import ThemePicker from '../../features/classes/components/ThemePicker';
+import { READY_LIVING_WORLD_IDS } from '../../features/worlds/worldCatalog.js';
 import ClassCollection from '../../features/classes/components/ClassCollection';
 import { useClasses } from '../../features/classes/hooks/useClasses';
 import { classErrorMessage, getClassThemeCapabilities } from '../../services/class.service';
@@ -20,7 +21,7 @@ export default function TeacherClasses() {
   useEffect(() => {
     const controller = new AbortController();
     getClassThemeCapabilities({ signal: controller.signal }).then((ids) => {
-      if (!controller.signal.aborted) setEnabledLivingThemes(ids.filter((id) => id === 'deep-current'));
+      if (!controller.signal.aborted) setEnabledLivingThemes(ids.filter((id) => READY_LIVING_WORLD_IDS.includes(id)));
     });
     return () => controller.abort();
   }, []);

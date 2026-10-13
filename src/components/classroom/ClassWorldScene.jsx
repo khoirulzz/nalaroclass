@@ -1,3 +1,5 @@
+import LivingWorldArtwork from '../../features/worlds/LivingWorldArtwork.jsx';
+import '../../features/worlds/living-worlds-extended.css';
 import DeepCurrentArtwork from '../../features/worlds/DeepCurrentArtwork.jsx';
 /**
  * Five bespoke scalable classroom environments. Decorative, self-contained SVG:
@@ -5,6 +7,7 @@ import DeepCurrentArtwork from '../../features/worlds/DeepCurrentArtwork.jsx';
  */
 export default function ClassWorldScene({ themeId, className = '' }) {
   if (themeId === 'deep-current') return <DeepCurrentArtwork className={className} />;
+  if (['prism-city','paperbound','pixel-frontier','inventors-workshop'].includes(themeId)) return <LivingWorldArtwork themeId={themeId} className={className} />;
   return <svg className={className} viewBox="0 0 400 190" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
     {themeId === 'superhero' && <g strokeLinejoin="round">
       <circle cx="284" cy="80" r="64" fill="#ffd46b" opacity=".92" />

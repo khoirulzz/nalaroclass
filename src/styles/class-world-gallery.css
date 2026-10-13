@@ -135,3 +135,26 @@
   color:#177881;
 }
 .qz-class-card.qz-theme-deep-current:hover { box-shadow:0 18px 37px #0c41575c; }
+
+
+/* Accessible two-collection chooser for 10 worlds. */
+.qz-theme-picker__collection + .qz-theme-picker__collection {
+ margin-top:21px;padding-top:19px;border-top:1px solid #dddde1;
+}
+.qz-theme-picker__collection-title {
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ margin:0 0 10px;color:#344156;font-weight:900;font-size:.8rem;letter-spacing:-.018em;
+}
+.qz-theme-picker__collection-title span {
+ color:#687587;font-size:.67rem;font-weight:650;letter-spacing:0;
+}
+.qz-theme-picker__collection-description {
+ color:#697588;font-size:.72rem;line-height:1.5;margin:-5px 0 11px;
+}
+.qz-theme-picker__collection .qz-theme-choice:last-child:nth-child(odd) {
+ grid-column:1 / -1;
+}
+.qz-theme-choice[class*="qz-theme-"] .qz-theme-choice__name,
+.qz-theme-choice[class*="qz-theme-"] .qz-theme-choice__detail {
+ position:relative;z-index:2;overflow-wrap:anywhere;
+}

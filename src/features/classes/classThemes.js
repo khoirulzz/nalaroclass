@@ -9,7 +9,9 @@ export const CLASS_THEMES = [
     const world = getLivingWorld(id);
     return {
       id:world.id, name:world.name, short:world.short, subtitle:world.subtitle,
-      symbol:'◉', accent:world.accent, backdrop:world.canvas, icon:'waves',
+      symbol:({ 'deep-current':'◉','prism-city':'◆',paperbound:'✉','pixel-frontier':'▦','inventors-workshop':'⚙' })[id],
+      accent:world.accent, backdrop:world.canvas,
+      icon:({ 'deep-current':'waves','prism-city':'gem',paperbound:'book-open','pixel-frontier':'grid-3x3','inventors-workshop':'wrench' })[id],
       collection:'living-worlds',
     };
   }),

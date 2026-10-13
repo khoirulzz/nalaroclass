@@ -1,8 +1,8 @@
 /**
  * Living Worlds — theme-specific art direction and rendering contracts.
  *
- * Only status "ready" may be saved on a class. The other worlds are scaffolds,
- * deliberately not surfaced in the class-creation UI until art/QA is complete.
+ * Only status "ready" may be saved on a class. Each world remains independent,
+ * with a distinct material system and browser-only scene adapter.
  * Animation is local to the browser; no simulation state goes to the Worker.
  */
 export const LIVING_WORLD_CATALOG = Object.freeze({
@@ -24,34 +24,38 @@ export const LIVING_WORLD_CATALOG = Object.freeze({
   'prism-city': Object.freeze({
     id: 'prism-city', name: 'Prism City', short: 'Kota Prisma',
     subtitle: 'Susun pengetahuan dari ribuan sudut pandang.',
-    status: 'planned', style: 'faceted-mosaic', scene: 'prism',
+    status: 'ready', style: 'faceted-mosaic', scene: 'prism',
     creatures: Object.freeze(['crystal-sprite']),
     effects: Object.freeze(['facet-drift', 'refract', 'scatter']),
     interactive: true,
+    canvas: '#222d62', surface: '#313b74', accent: '#cbd5ff',
   }),
   'paperbound': Object.freeze({
     id: 'paperbound', name: 'Paperbound World', short: 'Dunia Origami',
     subtitle: 'Setiap lembaran menyimpan sebuah petualangan.',
-    status: 'planned', style: 'tactile-paper', scene: 'paper',
+    status: 'ready', style: 'tactile-paper', scene: 'paper',
     creatures: Object.freeze(['origami-bird']),
     effects: Object.freeze(['paper-fall', 'fold', 'flutter']),
     interactive: true,
+    canvas: '#f4e8d6', surface: '#fff8e9', accent: '#785d43',
   }),
   'pixel-frontier': Object.freeze({
     id: 'pixel-frontier', name: 'Pixel Frontier', short: 'Petualangan Pixel',
     subtitle: 'Langkah kecil membangun petualangan besar.',
-    status: 'planned', style: 'pixel-block', scene: 'pixel',
+    status: 'ready', style: 'pixel-block', scene: 'pixel',
     creatures: Object.freeze(['pixel-sprite']),
     effects: Object.freeze(['sprite-walk', 'pixel-dissolve', 'burst']),
     interactive: true,
+    canvas: '#e8f3e8', surface: '#fffdf4', accent: '#365d88',
   }),
   'inventors-workshop': Object.freeze({
     id: 'inventors-workshop', name: "Inventor's Workshop", short: 'Bengkel Penemu',
     subtitle: 'Rakit ide, uji gagasan, temukan sesuatu yang baru.',
-    status: 'planned', style: 'isometric-blueprint', scene: 'workshop',
+    status: 'ready', style: 'isometric-blueprint', scene: 'workshop',
     creatures: Object.freeze(['inventor-bot']),
     effects: Object.freeze(['gear-turn', 'circuit-pulse', 'bot-flee']),
     interactive: true,
+    canvas: '#e5f0eb', surface: '#fffdf4', accent: '#29677e',
   }),
 });
 

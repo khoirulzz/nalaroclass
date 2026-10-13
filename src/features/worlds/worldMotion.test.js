@@ -3,12 +3,17 @@ import test from 'node:test';
 import { getFleeVector, getWorldEntityBudget, findNearestCreature } from './worldMotion.js';
 import { getLivingWorld, READY_LIVING_WORLD_IDS } from './worldCatalog.js';
 
-test('only completed living world is eligible for class selection', () => {
-  assert.deepEqual(READY_LIVING_WORLD_IDS, ['deep-current']);
-  assert.equal(getLivingWorld('deep-current').status, 'ready');
-  for (const id of ['prism-city', 'paperbound', 'pixel-frontier', 'inventors-workshop']) {
-    assert.equal(getLivingWorld(id).status, 'planned');
+test('all five worlds are ready with unique scenes and nonempty visual contracts', () => {
+  assert.deepEqual(READY_LIVING_WORLD_IDS, ['deep-current','prism-city','paperbound','pixel-frontier','inventors-workshop']);
+  const scenes = new Set();
+  for (const id of READY_LIVING_WORLD_IDS) {
+    const world = getLivingWorld(id);
+    assert.equal(world.status,'ready');
+    assert.ok(world.canvas && world.surface && world.accent);
+    assert.ok(world.creatures.length > 0 && world.effects.length > 0);
+    scenes.add(world.scene);
   }
+  assert.equal(scenes.size,5);
   assert.equal(getLivingWorld('invalid'), null);
 });
 
