@@ -108,3 +108,30 @@
   .qz-theme-choice .qz-theme-choice__scene > svg { transition:none; }
   .qz-theme-choice:hover .qz-theme-choice__scene > svg { transform:none; }
 }
+
+/* Deep Current — the gallery is a small observation window into the reef. */
+.qz-theme-choice.qz-theme-deep-current {
+  background:#0e5069;
+  border-radius:28px 11px 30px 13px;
+  color:#f4fffc;
+  --world-ink:#f4fffc;
+}
+.qz-theme-choice.qz-theme-deep-current .qz-theme-choice__scene {
+  background:linear-gradient(140deg,#125e7b,#073d59);
+  border-radius:18px 6px 18px 7px;
+  border:1px solid #73bac2;
+}
+.qz-theme-choice.qz-theme-deep-current .qz-theme-choice__detail { opacity:1; color:#ceeeec; }
+.qz-theme-choice.qz-theme-deep-current .qz-theme-choice__check { background:#a9efda; color:#0a4251; }
+.qz-class-card.qz-theme-deep-current {
+  border:1px solid #68aebb;
+  border-radius:25px 11px 26px 13px;
+  box-shadow:0 14px 32px #0c415746;
+}
+.qz-class-card.qz-theme-deep-current .qz-class-card__top {
+  background:linear-gradient(145deg,#155e75,#073e59);
+}
+.qz-class-card.qz-theme-deep-current .qz-class-card__world-name {
+  color:#177881;
+}
+.qz-class-card.qz-theme-deep-current:hover { box-shadow:0 18px 37px #0c41575c; }
