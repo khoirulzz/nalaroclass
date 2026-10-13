@@ -21,7 +21,7 @@ function RouteMetadata() {
   useEffect(() => {
     const publicLanding = pathname === '/';
     document.title = publicLanding
-      ? 'Nalaro Class — Belajar, bermain, dan tumbuh'
+      ? 'NalaroClass | Platform Pembelajaran Guru dan Siswa'
       : pathname === '/login' ? 'Masuk atau daftar — Nalaro Class' : 'Nalaro Class — Ruang belajar';
     document.querySelector('meta[name="robots"]')?.setAttribute('content', publicLanding ? 'index, follow' : 'noindex, nofollow');
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', 'https://nalaroclass.pages.dev/');
