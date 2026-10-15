@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
+import { CLASS_THEMES } from '../../src/features/classes/classThemes.js';
 
 // Public UI + isolated auth smoke. Synthetic accounts only; no Firebase requests.
 const root = path.resolve(import.meta.dirname, '../..');
@@ -51,8 +52,25 @@ const widths = [320, 390, 768, 1024, 1440];
 for (const width of widths) {
   await page.setViewportSize({width,height:900});
   await goto(); await layout(`landing ${width}`);
+  for (const photo of await page.locator('.nlr-landing img').all()) {
+    await photo.scrollIntoViewIfNeeded();
+    await photo.evaluate(img => img.decode());
+  }
+  await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({path:path.join(artifacts,`landing-${width}.png`),fullPage:true});
-  for (const name of ['Hotspot gambar','Susun urutan','Pilihan gambar','Pilihan ganda']) {
+  for (const theme of CLASS_THEMES) {
+    await page.locator('.nlr-theme-options').getByRole('button', { name: new RegExp(theme.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).click();
+    const preview = page.locator('.nlr-theme-preview > img');
+    await preview.evaluate(img => img.decode());
+    assert.equal(await preview.getAttribute('src'), `/images/class-themes/${theme.id}.webp`);
+    await layout(`theme ${theme.id} ${width}`);
+  }
+  await page.locator('.nlr-theme-options button').first().click();
+  for (const label of ['Diskusi', 'Nalaro Live', 'Materi']) {
+    await page.locator('.nlr-realclass__switcher').getByRole('button', { name: new RegExp(label) }).click();
+    await page.locator('.nlr-story-photo > img').evaluate(img => img.decode());
+  }
+  for (const name of ['Titik pada gambar','Susun urutan','Pilihan gambar','Pilihan ganda']) {
     await page.getByRole('button',{name:new RegExp(name)}).click();
     await layout(`format ${name} ${width}`);
   }
@@ -133,7 +151,7 @@ const after=await readFile(path.join(root,'src/pages/Auth.jsx'),'utf8');
 const handlers=s=>s.slice(s.indexOf('const profileSeed'),s.indexOf('  return (\n    <main')).replaceAll('\r','');
 assert.equal(handlers(after.replaceAll('\r','')),handlers(before.replaceAll('\r','')));
 assert.deepEqual(errors,[]);
-console.log('PASS: 45 layout states, 6 auth method/role combinations, guest, role mismatch, confirmation validation, Google failure recovery, motion controls, reduced motion, keyboard skip link, unchanged auth handlers; no browser runtime errors.');
+console.log('PASS: 95 layout states including all 10 themes, responsive photos loaded, 3 story panels, 6 auth method/role combinations, guest, role mismatch, confirmation validation, Google failure recovery, motion controls, reduced motion, keyboard skip link, unchanged auth handlers; no browser runtime errors.');
 } finally {
   await browser.close();
 }

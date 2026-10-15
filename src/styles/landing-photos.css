@@ -1,0 +1,99 @@
+/* Photography and product previews are scoped to the public landing. */
+.nlr-landing .nlr-hero { gap: 36px; grid-template-columns: 1fr 1fr; padding-top: 56px; }
+.nlr-hero__eyebrow { display:block; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#566f66; margin-bottom:22px; }
+.nlr-landing .nlr-hero h1 { font-size:clamp(42px,5vw,72px); letter-spacing:-.06em; }
+.nlr-landing .nlr-hero h1 em { white-space:normal; }
+.nlr-landing .nlr-hero__copy > p { max-width:410px; font-size:17px; }
+.nlr-landing .nlr-hero-photo { position:relative; width:100%; margin:0; padding:0 0 30px; max-width:none; }
+.nlr-hero-photo > img { display:block; width:100%; aspect-ratio:1.12; object-fit:cover; object-position:50% 45%; border-radius:18px 130px 18px 18px; box-shadow:14px 14px 0 #e3e9d6; }
+.nlr-hero-photo figcaption { position:absolute; bottom:5px; left:-20px; padding:15px 22px; display:flex; align-items:center; gap:14px; background:#fffdf7; border:1px solid #e1dfd2; box-shadow:0 10px 25px #23385714; border-radius:4px; font-size:12px; line-height:1.6; transform:rotate(-3deg); }
+.nlr-hero-photo figcaption svg { color:#526c50; }
+.nlr-photo-spark { position:absolute; top:-32px; right:-12px; color:#b95d3d; font-size:90px; line-height:1; transform:rotate(10deg); }
+.nlr-hero__foot a { display:flex; align-items:center; gap:10px; color:var(--nlr-blue); font-weight:750; }
+.nlr-landing .nlr-hero__foot { width:100%; margin-top:0; }
+.nlr-landing .nlr-worlds { padding-block:90px; }
+.nlr-theme-options { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-bottom:30px; }
+.nlr-theme-options button { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 12px; min-height:64px; border:1px solid #c7cfde; border-radius:4px; background:transparent; color:#34445d; font-size:12px; font-weight:750; text-align:left; line-height:1.4; }
+.nlr-theme-options button > span { font-size:10px; font-weight:500; color:#626f83; }
+.nlr-theme-options button > svg { flex:none; }
+.nlr-theme-options button[aria-pressed=true] { color:#fff; background:#2d51b8; border-color:#2d51b8; }
+.nlr-theme-options button[aria-pressed=true] > span { color:#dbe4ff; }
+.nlr-theme-options button:hover { border-color:#2d51b8; }
+.nlr-theme-preview { max-width:1000px; margin:0 auto; overflow:hidden; background:#fffdf8; border:1px solid #c5cbd6; border-radius:10px; box-shadow:0 18px 50px #1d31551a; }
+.nlr-theme-preview__bar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 20px; color:#5b6576; background:#f9f9fc; border-bottom:1px solid #d6dae2; font-size:11px; }
+.nlr-theme-preview__bar > span:first-child { color:#abb6cb; letter-spacing:3px; }
+.nlr-theme-preview > img { width:100%; height:auto; display:block; background:#e5e9f0; }
+.nlr-theme-preview figcaption { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:17px 22px; border-top:1px solid #d9dde4; font-size:12px; }
+.nlr-theme-preview figcaption > span { color:#5d6675; font-size:11px; }
+.nlr-landing .nlr-journey { padding-block:100px; gap:8%; }
+.nlr-landing .nlr-journey__intro h2 { font-size:clamp(38px,4.3vw,64px); }
+.nlr-landing .nlr-chapter { rotate:0deg; padding:25px; border-radius:4px 4px 28px 4px; }
+.nlr-chapter__photo { display:block; width:100%; aspect-ratio:1.5; height:auto; object-fit:cover; object-position:50% 40%; border-radius:3px 3px 20px 3px; margin:22px 0; }
+.nlr-chapter__photo[src*="teacher"] { object-position:50% 36%; }
+.nlr-landing .nlr-chapter h3 { font-size:clamp(25px,2.3vw,34px); }
+.nlr-landing .nlr-realclass { padding:85px 0; background:#f3e8dd; }
+.nlr-story-photo { position:relative; min-width:0; padding-bottom:22px; }
+.nlr-story-photo > img { display:block; width:100%; aspect-ratio:1; object-fit:cover; border-radius:140px 12px 12px 12px; object-position:50% 40%; }
+.nlr-photo-note { position:absolute; right:-15px; bottom:0; padding:18px 25px; font:italic 20px/1.4 Georgia,serif; color:#53694e; background:#f6f4d8; box-shadow:0 8px 22px #23385714; transform:rotate(4deg); }
+.nlr-landing .nlr-realclass__copy h2 { font-size:clamp(38px,4.2vw,62px); }
+.nlr-teacher-intro { display:grid; grid-template-columns:.8fr 1.2fr; gap:clamp(35px,7vw,100px); align-items:center; margin-bottom:60px; }
+.nlr-teacher-intro > img { display:block; width:100%; max-height:470px; aspect-ratio:1; object-fit:cover; object-position:50% 25%; border-radius:8px 100px 8px 8px; }
+.nlr-teacher-intro .nlr-classroom__heading { display:block; margin:0; }
+.nlr-teacher-intro .nlr-classroom__heading p { max-width:450px; line-height:1.7; }
+.nlr-teacher-intro .nlr-margin-note { margin-bottom:22px; }
+.nlr-landing .nlr-quiz-intro h2 { font-size:clamp(36px,4.2vw,62px); }
+.nlr-landing .nlr-quiz-section { gap:7%; }
+@media(min-width:1500px) { .nlr-landing .nlr-hero h1 { font-size:76px; } }
+@media(max-width:1100px) {
+ .nlr-theme-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .nlr-theme-options button { min-height:54px; }
+ .nlr-landing .nlr-hero { gap:25px; }
+ .nlr-hero-photo > img { aspect-ratio:.95; border-top-right-radius:90px; }
+ .nlr-landing .nlr-hero h1 { font-size:clamp(36px,4.9vw,56px); }
+}
+@media(max-width:900px) {
+ .nlr-landing .nlr-hero { padding-top:35px; }
+ .nlr-landing .nlr-hero__copy > p { font-size:15px; }
+ .nlr-hero-photo figcaption { left:-10px; padding:10px 15px; }
+ .nlr-landing .nlr-realclass__layout { grid-template-columns:1fr 1fr; gap:35px; }
+ .nlr-landing .nlr-realclass__copy h2 { font-size:38px; }
+ .nlr-photo-note { right:0; padding:12px 18px; font-size:17px; }
+}
+@media(max-width:700px) {
+ .nlr-landing .nlr-hero { display:grid; grid-template-columns:minmax(0,1fr); gap:28px; }
+ .nlr-hero__eyebrow { font-size:10px; margin-bottom:17px; letter-spacing:.04em; }
+ .nlr-landing .nlr-hero h1 { font-size:clamp(34px,8.1vw,53px); }
+ .nlr-landing .nlr-hero__copy { padding:0; }
+ .nlr-landing .nlr-hero__copy > p { max-width:440px; margin-block:23px; }
+ .nlr-landing .nlr-hero-photo { max-width:550px; margin:0 auto; }
+ .nlr-hero-photo > img { aspect-ratio:1.25; border-top-right-radius:90px; box-shadow:8px 8px 0 #e3e9d6; }
+ .nlr-hero-photo figcaption { left:10px; bottom:12px; font-size:10px; }
+ .nlr-photo-spark { top:-18px; right:-2px; font-size:58px; }
+ .nlr-landing .nlr-hero__foot { align-items:flex-start; margin-top:-12px; font-size:10px; gap:16px; }
+ .nlr-hero__foot a { max-width:125px; line-height:1.5; flex:none; }
+ .nlr-landing .nlr-worlds { padding-block:60px; }
+ .nlr-theme-options { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-bottom:20px; }
+ .nlr-theme-options button { font-size:11px; padding:10px; min-height:55px; }
+ .nlr-theme-options button > span { display:none; }
+ .nlr-theme-preview { border-radius:5px; }
+ .nlr-theme-preview__bar { font-size:9px; padding:10px; }
+ .nlr-theme-preview__bar > span:first-child { display:none; }
+ .nlr-theme-preview figcaption { display:block; padding:13px; line-height:1.6; }
+ .nlr-theme-preview figcaption > span { display:block; margin-top:3px; font-size:10px; }
+ .nlr-landing .nlr-journey { padding-block:65px; gap:30px; }
+ .nlr-landing .nlr-journey__intro { position:static; }
+ .nlr-landing .nlr-journey__intro h2, .nlr-landing .nlr-realclass__copy h2 { font-size:clamp(34px,8vw,48px); }
+ .nlr-landing .nlr-journey__intro h2 em::before { content:none; }
+ .nlr-landing .nlr-chapter { padding:20px; }
+ .nlr-landing .nlr-realclass { padding-block:60px; }
+ .nlr-landing .nlr-realclass__layout { grid-template-columns:minmax(0,1fr); gap:25px; }
+ .nlr-story-photo { max-width:520px; margin:auto; }
+ .nlr-story-photo > img { aspect-ratio:1.2; border-top-left-radius:95px; }
+ .nlr-teacher-intro { grid-template-columns:minmax(0,1fr); gap:30px; margin-bottom:35px; }
+ .nlr-teacher-intro > img { max-height:380px; aspect-ratio:1.2; }
+ .nlr-teacher-intro .nlr-classroom__heading h2 { font-size:clamp(34px,8vw,48px); }
+ .nlr-landing .nlr-quiz-intro h2 { font-size:clamp(33px,7.5vw,48px); }
+ .nlr-landing .nlr-quiz-intro h2 em::before { content:none; }
+ .nlr-landing .nlr-quiz-intro h2 br { display:block; }
+ .nlr-landing .nlr-cta h2 { font-size:clamp(32px,7.4vw,50px); }
+}

@@ -1,6 +1,6 @@
 # Status dan riwayat pengerjaan Nalaro Class
 
-Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus diperbarui setelah setiap tugas selesai. Status mengacu pada kode di repository `hulumzz/Quizzy` dan `khoirulzz/nalaroclass` dan bukti pengujian yang disebutkan; keberadaan kode tidak otomatis berarti fitur sudah lolos uji produksi.
+Terakhir diperiksa: 15 Oktober 2026. Dokumen ini adalah catatan kerja yang harus diperbarui setelah setiap tugas selesai. Status mengacu pada kode di repository `hulumzz/Quizzy` dan `khoirulzz/nalaroclass` dan bukti pengujian yang disebutkan; keberadaan kode tidak otomatis berarti fitur sudah lolos uji produksi.
 
 ## Aturan pembaruan oleh AI
 
@@ -19,6 +19,8 @@ Terakhir diperiksa: 3 Oktober 2026. Dokumen ini adalah catatan kerja yang harus 
 - Remote `url` menunjuk `hulumzz/Quizzy` dan remote `pages` menunjuk `khoirulzz/nalaroclass`. Pengguna mengizinkan sinkronisasi keduanya; push `pages/main` terbukti memicu deployment Pages produksi.
 
 ## Posisi saat ini
+
+**Landing fotografi, 15 Oktober 2026:** perubahan GitHub ditarik fast-forward dari `f598f37` ke `a3ae259`. Landing kini memakai tiga foto guru/siswa Indonesia buatan imagegen (WebP 640/1280), copy yang menjelaskan kegiatan nyata, dan pratinjau seluruh 10 tema dari komponen kelas terbaru dengan data sintetis. Ilustrasi karakter landing lama dihapus; tampilan kelas dan handler auth tidak diubah. Build, 31 tes frontend, 95 keadaan layout sintetis, dan browser hasil build pada 320/390/768/1024/1440 px lulus; lint exit 0 dengan satu warning dependency hook bawaan `LivingWorldEngine.jsx`. Commit/push/Pages dan browser produksi masih menunggu pada entri ini.
 
 **UI landing dan auth, 3 Oktober 2026:** desain editorial terang dengan ilustrasi buku, warna biru/sage/koral, alur scroll bertahap, contoh format kuis interaktif, serta catatan belajar fade pada auth selesai lokal. Logo/nama dipertahankan; handler auth, routing, layanan, dan backend tidak diubah. Lint/build, 26 tes frontend, dan 45 keadaan layout browser lokal 320/390/768/1024/1440 px lulus. Source UI `984d6fe` sudah di-push ke `pages/main` dan aktif di `https://nalaroclass.pages.dev` pada deployment `10479847-26ef-4c6a-8c6f-03c56f54ef9f`. CI validate dan Cloudflare Pages sukses. Browser produksi publik pada 390/1440 px lulus; login Firebase nyata belum diuji ulang.
 
@@ -67,6 +69,13 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 | Learning Insights | Bukti release 2 Oktober API/browser dan regresi lokal 3 Oktober mendukung evidence/fairness/privacy. Route siswa Worker ada; 404 yang dilaporkan berasal dari Pages/API lama. Benchmark data besar dan browser terautentikasi pada Pages tujuan belum diperiksa ulang | `workers/src/repositories/learning-analytics.repository.js`, `src/pages/ClassAnalytics.jsx`, `docs/learning-insights.md` |
 
 ## Pekerjaan tersisa
+
+### Landing publik, 15 Oktober 2026
+
+- [x] Foto imagegen guru/siswa Indonesia, WebP responsif, penggantian karakter landing, dan copy produksi.
+- [x] Semua 10 tema dari katalog terbaru memakai screenshot komponen kelas aktual dengan data contoh, bukan reka ulang warna/maskot.
+- [x] Build, 31 tes frontend, 95 keadaan layout lokal, dan smoke browser hasil build pada lima viewport lulus. Navigasi auth diuji; login sungguhan dan perangkat fisik tidak diuji ulang.
+- [ ] Push main, tunggu Pages, lalu verifikasi browser landing produksi. Backend/D1 tidak termasuk rilis UI ini.
 
 ### UI landing dan auth 3 Oktober
 
@@ -119,6 +128,15 @@ Patch unit rotation wajah, mode verifikasi presensi, dan snapshot nama kuis terl
 - HTTP/CORS dan tes otomatis tidak menggantikan uji UI browser, transfer Cloudinary nyata, perangkat kamera/lokasi, atau uji beban live.
 
 ## Riwayat perubahan
+
+### 15 Okt 2026 - Landing fotografi Indonesia dan pratinjau 10 tema terbaru
+
+- `git pull --ff-only origin main` menarik empat commit terbaru hingga `a3ae259` dari `khoirulzz/nalaroclass`; perubahan lokal lama di dokumen status dipertahankan dan tidak disertakan ke commit tugas ini.
+- Tiga foto buatan imagegen menggambarkan guru mendampingi siswa, persiapan guru, dan diskusi siswa Indonesia. Enam WebP responsif di `public/images/landing/`; prompt, asal aset, dan cara regenerasi tercatat pada `docs/landing-image-assets.md`. Foto digunakan pada hero dan section materi/diskusi/kuis/guru; karakter SVG landing lama dihapus. Ikon antarmuka dan preview produk tetap digunakan.
+- `WorldShowcase.jsx` membaca seluruh 10 tema `CLASS_THEMES`. Screenshot `public/images/class-themes/` memakai `ClassThemeScope`, `ClassOverview`, navigasi, summary/Card, dan artwork asli dari baseline `a3ae259`, dengan data contoh serta reduced motion. Tidak membaca data kelas produksi. Capture dapat diulang melalui `workers/scripts/capture-landing-themes.mjs`.
+- Copy hero, fitur, caption, contoh soal, CTA, dan footer dibuat lebih langsung. Layout foto, pilihan tema, dan section mengikuti mobile/desktop melalui `src/styles/landing-photos.css`; handler auth, route, layanan, dan backend tidak berubah.
+- Validasi aktual: `npm.cmd run build` PASS (peringatan ukuran chunk aplikasi lama); `npm.cmd run test:frontend` 31/31 PASS; lint exit 0 dengan satu warning dependency hook bawaan `LivingWorldEngine.jsx`; syntax check tiga script dan `git diff --check` PASS. `smoke-public-ui.mjs`: 95 keadaan layout pada 320/390/768/1024/1440 px, 10 tema, foto terdecode, tiga panel cerita, empat format soal, auth sintetis dan handler tetap lulus, tanpa overflow atau runtime error. `smoke-landing-production.mjs` terhadap build lokal `127.0.0.1:4173` lulus pada lima viewport, termasuk anchor desktop dan navigasi masuk; screenshot desktop/mobile diperiksa.
+- Tujuan Pages diverifikasi read-only di akun aktif: proyek `nalaroclass`, source `khoirulzz/nalaroclass`, branch `main`, domain `nalaroclass.pages.dev`, `class.nalaro.digital`, dan `nalaro.web.id`; sebelum rilis canonical source `a3ae259` sukses. Status tugas saat entri dibuat: siap commit/push; deployment dan browser produksi belum diverifikasi. Worker, D1, AWS, login Firebase sungguhan, dan perangkat fisik tidak diuji/diubah oleh tugas landing ini.
 
 ### 3 Okt 2026 - Rombak UI landing dan auth
 
