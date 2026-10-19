@@ -60,7 +60,7 @@ export default function FaceCheckInDialog({
       steps,
       profile,
       finishStage: 'verifying',
-      onComplete: async (result) => {
+      onComplete: async (result, { signal }) => {
         // result.embedding is the averaged embedding from Human.js scan
         // Send to Python API for server-side verification
         let verificationToken;
@@ -69,7 +69,7 @@ export default function FaceCheckInDialog({
             liveEmbedding: result.embedding,
             attendanceId,
             classId,
-            signal: scanner.scan?.signal,
+            signal,
           });
           verificationToken = apiResult.verificationToken;
         } catch (err) {

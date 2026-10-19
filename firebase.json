@@ -1,5 +1,18 @@
 {
   "firestore": {
     "rules": "firestore.rules"
+  },
+  "auth": {
+    "authorizedDomains": [
+      "localhost",
+      "quizzy-eb33b.firebaseapp.com",
+      "quizzy-eb33b.web.app",
+      "app.quizzyhub.my.id",
+      "app-quizzy-eb33b.web.app",
+      "nalaro.web.id",
+      "quizzy-f01.pages.dev",
+      "nalaroclass.pages.dev",
+      "class.nalaro.digital"
+    ]
   }
 }

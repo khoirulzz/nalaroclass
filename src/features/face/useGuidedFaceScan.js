@@ -41,7 +41,7 @@ export default function useGuidedFaceScan() {
       if (!active()) return;
       stopRun(run);
       setScan((previous) => ({ ...previous, stage: finishStage }));
-      await onComplete(result);
+      await onComplete(result, { signal });
       if (active()) setScan((previous) => ({ ...previous, stage: 'complete' }));
     } catch (caught) {
       if (active()) { setError(caught?.message && !caught?.code && caught?.name === 'Error' ? caught.message : faceErrorMessage(caught)); setScan((previous) => ({ ...previous, stage: 'error' })); }

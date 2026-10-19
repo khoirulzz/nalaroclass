@@ -16,7 +16,7 @@
 import { getAuth } from 'firebase/auth';
 
 /** URL of the Python Face API on Render — set via VITE_FACE_API_URL */
-const getFaceApiUrl = () => ((typeof import.meta !== 'undefined' && import.meta?.env?.VITE_FACE_API_URL) || (typeof process !== 'undefined' && process?.env?.VITE_FACE_API_URL) || '').replace(/\/$/, '');
+const getFaceApiUrl = () => ((typeof import.meta !== 'undefined' && import.meta?.env?.VITE_FACE_API_URL) || (typeof process !== 'undefined' && process?.env?.VITE_FACE_API_URL) || '').trim().replace(/\/+$/, '');
 
 /** Timeout for the verify-face network call (ms) */
 const REQUEST_TIMEOUT_MS = 90_000; // 90 s to accommodate cold-start
@@ -67,7 +67,7 @@ export async function requestFaceVerification({ liveEmbedding, attendanceId, cla
       'Layanan verifikasi wajah belum dikonfigurasi. Hubungi pengelola aplikasi.',
     );
   }
-  if (!Array.isArray(liveEmbedding) || liveEmbedding.length < 32) {
+  if (!Array.isArray(liveEmbedding) || liveEmbedding.length < 64 || liveEmbedding.length > 2048 || liveEmbedding.some((value) => !Number.isFinite(value) || Math.abs(value) > 100)) {
     throw new FaceApiError('INVALID_EMBEDDING', 'Data wajah tidak lengkap. Ulangi pemindaian.');
   }
 
@@ -86,11 +86,13 @@ export async function requestFaceVerification({ liveEmbedding, attendanceId, cla
   // Build abort signal with timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  const combinedSignal = signal
-    ? AbortSignal.any?.([signal, controller.signal]) ?? controller.signal
-    : controller.signal;
+  const abort = () => controller.abort();
+  if (signal?.aborted) abort();
+  else signal?.addEventListener('abort', abort, { once: true });
+  const combinedSignal = controller.signal;
 
   let response;
+  let data;
   try {
     response = await fetch(`${faceApiUrl}/verify-face`, {
       method: 'POST',
@@ -98,7 +100,17 @@ export async function requestFaceVerification({ liveEmbedding, attendanceId, cla
       body: JSON.stringify({ idToken, liveEmbedding, attendanceId, classId }),
       signal: combinedSignal,
     });
+    try { data = await response.json(); }
+    catch (error) {
+      if (error?.name === 'AbortError') throw error;
+      throw new FaceApiError('FACE_API_RESPONSE_INVALID', 'Respons server verifikasi tidak dapat dibaca.');
+    }
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      throw new FaceApiError('FACE_API_RESPONSE_INVALID', 'Respons server verifikasi tidak dapat dibaca.');
+    }
   } catch (err) {
+    if (err instanceof FaceApiError) throw err;
+    if (signal?.aborted) throw new DOMException('Pemindaian dibatalkan.', 'AbortError');
     if (err?.name === 'AbortError') {
       throw new FaceApiError(
         'FACE_API_TIMEOUT',
@@ -108,21 +120,19 @@ export async function requestFaceVerification({ liveEmbedding, attendanceId, cla
     throw new FaceApiError('FACE_API_NETWORK_ERROR', 'Gagal menghubungi server verifikasi wajah. Periksa koneksi internet.');
   } finally {
     clearTimeout(timeoutId);
-  }
-
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    throw new FaceApiError('FACE_API_RESPONSE_INVALID', 'Respons server verifikasi tidak dapat dibaca.');
+    signal?.removeEventListener('abort', abort);
   }
 
   if (!response.ok || !data.verified) {
-    const code = data.reason || 'FACE_MISMATCH';
-    const message = data.message || faceApiErrorMessage({ code });
+    const detail = data.detail && typeof data.detail === 'object' ? data.detail : data;
+    const code = detail.reason || (response.status === 401 ? 'AUTH_INVALID' : response.ok ? 'FACE_MISMATCH' : 'FACE_API_UNAVAILABLE');
+    const message = detail.message || faceApiErrorMessage({ code });
     throw new FaceApiError(code, message);
   }
 
+  if (typeof data.verificationToken !== 'string' || !data.verificationToken || !Number.isFinite(data.similarity) || !Number.isFinite(Date.parse(data.expiresAt))) {
+    throw new FaceApiError('FACE_API_RESPONSE_INVALID', 'Respons server verifikasi tidak lengkap. Ulangi pemindaian.');
+  }
   return {
     verified: true,
     verificationToken: data.verificationToken,

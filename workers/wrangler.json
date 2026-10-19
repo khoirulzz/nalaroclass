@@ -7,7 +7,7 @@
   "vars": {
     "FIREBASE_PROJECT_ID": "quizzy-eb33b",
     "GROQ_DEFAULT_MODEL": "qwen/qwen3.8-27b",
-    "ALLOWED_ORIGINS": "https://nalaroclass.pages.dev,https://quizzy-f01.pages.dev,https://quizzy.my.id,https://nalaro.web.id,http://localhost:5173"
+    "ALLOWED_ORIGINS": "https://nalaroclass.pages.dev,https://class.nalaro.digital,https://quizzy-f01.pages.dev,https://quizzy.my.id,https://nalaro.web.id,http://localhost:5173"
   },
   "d1_databases": [
     {

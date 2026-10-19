@@ -27,18 +27,16 @@ export function registerAttendanceRoutes(app) {
     // Server-side face token validation: enforce JWT from Python Face API
     if (checkInInput.verificationMethod === 'face') {
       const secret = c.env.FACE_API_SECRET;
-      if (!secret) {
-        // FACE_API_SECRET not configured yet — log warning but allow (migration safety)
-        console.warn('[attendance] FACE_API_SECRET not set; skipping face token validation (legacy mode).');
-      } else {
-        if (!checkInInput.verificationToken) {
-          throw new HttpError(422, 'FACE_TOKEN_REQUIRED', 'Token verifikasi wajah wajib disertakan untuk presensi wajah. Ulangi pemindaian wajah.');
-        }
-        try {
-          await verifyFaceToken(checkInInput.verificationToken, secret, { uid: auth.uid, attendanceId });
-        } catch (err) {
-          throw new HttpError(422, err.code || 'FACE_TOKEN_INVALID', err.message || 'Token verifikasi wajah tidak valid atau sudah kedaluwarsa.');
-        }
+      if (!secret || secret.length < 32) {
+        throw new HttpError(503, 'FACE_API_NOT_CONFIGURED', 'Layanan verifikasi wajah belum siap. Hubungi pengelola aplikasi.');
+      }
+      if (!checkInInput.verificationToken) {
+        throw new HttpError(422, 'FACE_TOKEN_REQUIRED', 'Token verifikasi wajah wajib disertakan. Ulangi pemindaian wajah.');
+      }
+      try {
+        await verifyFaceToken(checkInInput.verificationToken, secret, { uid: auth.uid, attendanceId, classId: classId(c) });
+      } catch (err) {
+        throw new HttpError(422, err.code || 'FACE_TOKEN_INVALID', err.message || 'Token verifikasi wajah tidak valid atau sudah kedaluwarsa.');
       }
     }
     const checkIn = await repository(c).checkIn({ classId: classId(c), attendanceId, uid: auth.uid, name: displayName(auth), ...checkInInput });

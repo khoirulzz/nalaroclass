@@ -12,8 +12,8 @@ function base64urlEncode(bufferOrStr) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-async function createTestJwt(payload, secret = TEST_SECRET) {
-  const header = { alg: 'HS256', typ: 'JWT' };
+async function createTestJwt(payload, secret = TEST_SECRET, alg = 'HS256') {
+  const header = { alg, typ: 'JWT' };
   const headerB64 = base64urlEncode(JSON.stringify(header));
   const payloadB64 = base64urlEncode(JSON.stringify(payload));
   const enc = new TextEncoder();
@@ -44,6 +44,7 @@ test('verifyFaceToken succeeds with valid token and matching claims', async () =
   const verified = await verifyFaceToken(token, TEST_SECRET, {
     uid: 'student-123',
     attendanceId: 'session-456',
+    classId: 'class-789',
   });
 
   assert.equal(verified.uid, 'student-123');
@@ -64,7 +65,7 @@ test('verifyFaceToken rejects expired token', async () => {
   });
 
   await assert.rejects(
-    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456' }),
+    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456', classId: 'class-789' }),
     (err) => err.code === 'FACE_TOKEN_EXPIRED'
   );
 });
@@ -80,7 +81,7 @@ test('verifyFaceToken rejects tampered token or wrong secret', async () => {
   }, 'different_secret_that_is_at_least_32_characters_long!');
 
   await assert.rejects(
-    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456' }),
+    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456', classId: 'class-789' }),
     (err) => err.code === 'FACE_TOKEN_INVALID'
   );
 });
@@ -96,7 +97,7 @@ test('verifyFaceToken rejects uid mismatch', async () => {
   });
 
   await assert.rejects(
-    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456' }),
+    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456', classId: 'class-789' }),
     (err) => err.code === 'FACE_TOKEN_UID_MISMATCH'
   );
 });
@@ -112,7 +113,7 @@ test('verifyFaceToken rejects attendanceId mismatch', async () => {
   });
 
   await assert.rejects(
-    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456' }),
+    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456', classId: 'class-789' }),
     (err) => err.code === 'FACE_TOKEN_ATTENDANCE_MISMATCH'
   );
 });
@@ -128,8 +129,25 @@ test('verifyFaceToken rejects invalid issuer', async () => {
   });
 
   await assert.rejects(
-    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456' }),
+    () => verifyFaceToken(token, TEST_SECRET, { uid: 'student-123', attendanceId: 'session-456', classId: 'class-789' }),
     (err) => err.code === 'FACE_TOKEN_INVALID'
   );
 });
 
+
+test('face token binds class, rejects bad header, malformed timestamps and exact expiry', async () => {
+  const now = Math.floor(Date.now() / 1000);
+  const payload = { uid: 'u', attendanceId: 'a', classId: 'c', iss: ISSUER, iat: now, exp: now + 60 };
+  const expected = { uid: 'u', attendanceId: 'a', classId: 'c' };
+  await assert.rejects(() => verifyFaceToken('%.%.%', TEST_SECRET, expected), { code: 'FACE_TOKEN_INVALID' });
+  const wrongClass = await createTestJwt({ ...payload, classId: 'other' });
+  await assert.rejects(() => verifyFaceToken(wrongClass, TEST_SECRET, expected), { code: 'FACE_TOKEN_CLASS_MISMATCH' });
+  const wrongHeader = await createTestJwt(payload, TEST_SECRET, 'HS512');
+  await assert.rejects(() => verifyFaceToken(wrongHeader, TEST_SECRET, expected), { code: 'FACE_TOKEN_INVALID' });
+  for (const change of [{ exp: 'forever' }, { iat: now + 60 }, { exp: now + 600 }]) {
+    const token = await createTestJwt({ ...payload, ...change });
+    await assert.rejects(() => verifyFaceToken(token, TEST_SECRET, expected));
+  }
+  const expired = await createTestJwt({ ...payload, iat: now - 60, exp: now });
+  await assert.rejects(() => verifyFaceToken(expired, TEST_SECRET, expected), { code: 'FACE_TOKEN_EXPIRED' });
+});
