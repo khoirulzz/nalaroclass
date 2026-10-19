@@ -6,6 +6,7 @@ import { AttendanceRepository } from '../repositories/attendance.repository.js';
 import { LearningSessionRepository } from '../repositories/learning-session.repository.js';
 import { validateClassId } from '../validation/classes.js';
 import { validateAttendanceId, validateAttendanceInput, validateAttendanceStatus, validateCheckIn } from '../validation/attendance.js';
+import { verifyFaceToken } from '../services/face-token.js';
 
 const MAX_BODY_BYTES = 8_192;
 async function body(c) { if (Number(c.req.header('content-length') || 0) > MAX_BODY_BYTES) throw new HttpError(413, 'PAYLOAD_TOO_LARGE', 'Data presensi terlalu besar.'); const raw = await c.req.text(); if (!raw) throw badRequest('INVALID_BODY', 'Data permintaan wajib diisi.'); if (raw.length > MAX_BODY_BYTES) throw new HttpError(413, 'PAYLOAD_TOO_LARGE', 'Data presensi terlalu besar.'); try { return JSON.parse(raw); } catch { throw badRequest('INVALID_JSON', 'Format data presensi tidak valid.'); } }
@@ -18,5 +19,29 @@ export function registerAttendanceRoutes(app) {
   app.post(base, requireAuth, async (c) => { const auth = identity(c); await assertAccountRole(c, 'teacher'); const attendance = await repository(c).create({ classId: classId(c), ownerId: auth.uid, ...validateAttendanceInput(await body(c)) }); return json(c, 201, { data: { attendance } }); });
   app.get(`${base}/:attendanceId`, requireAuth, async (c) => { const auth = identity(c); return json(c, 200, { data: { attendance: await repository(c).detail(classId(c), validateAttendanceId(c.req.param('attendanceId')), auth.uid) } }); });
   app.put(`${base}/:attendanceId/status`, requireAuth, async (c) => { const auth = identity(c); await assertAccountRole(c, 'teacher'); const attendance = await repository(c).setStatus({ classId: classId(c), attendanceId: validateAttendanceId(c.req.param('attendanceId')), ownerId: auth.uid, ...validateAttendanceStatus(await body(c)) }); return json(c, 200, { data: { attendance } }); });
-  app.post(`${base}/:attendanceId/check-in`, requireAuth, async (c) => { const auth = identity(c); await assertAccountRole(c, 'student'); const checkIn = await repository(c).checkIn({ classId: classId(c), attendanceId: validateAttendanceId(c.req.param('attendanceId')), uid: auth.uid, name: displayName(auth), ...validateCheckIn(await body(c)) }); return json(c, 200, { data: { checkIn } }); });
+  app.post(`${base}/:attendanceId/check-in`, requireAuth, async (c) => {
+    const auth = identity(c);
+    await assertAccountRole(c, 'student');
+    const checkInInput = validateCheckIn(await body(c));
+    const attendanceId = validateAttendanceId(c.req.param('attendanceId'));
+    // Server-side face token validation: enforce JWT from Python Face API
+    if (checkInInput.verificationMethod === 'face') {
+      const secret = c.env.FACE_API_SECRET;
+      if (!secret) {
+        // FACE_API_SECRET not configured yet — log warning but allow (migration safety)
+        console.warn('[attendance] FACE_API_SECRET not set; skipping face token validation (legacy mode).');
+      } else {
+        if (!checkInInput.verificationToken) {
+          throw new HttpError(422, 'FACE_TOKEN_REQUIRED', 'Token verifikasi wajah wajib disertakan untuk presensi wajah. Ulangi pemindaian wajah.');
+        }
+        try {
+          await verifyFaceToken(checkInInput.verificationToken, secret, { uid: auth.uid, attendanceId });
+        } catch (err) {
+          throw new HttpError(422, err.code || 'FACE_TOKEN_INVALID', err.message || 'Token verifikasi wajah tidak valid atau sudah kedaluwarsa.');
+        }
+      }
+    }
+    const checkIn = await repository(c).checkIn({ classId: classId(c), attendanceId, uid: auth.uid, name: displayName(auth), ...checkInInput });
+    return json(c, 200, { data: { checkIn } });
+  });
 }

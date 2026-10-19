@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ClassWorkspaceNav from '../components/classroom/ClassWorkspaceNav';
 import { AttendanceIcon, MembersIcon } from '../components/icons';
@@ -108,11 +108,11 @@ export default function ClassAttendance({ role }) {
     try { setDetail(await getAttendanceSession(classId, attendanceId)); } catch (caught) { setActionError(attendanceErrorMessage(caught)); } finally { setDetailLoading(false); }
   };
 
-  const checkIn = async (session, verificationMethod = 'standard') => {
+  const checkIn = async (session, verificationMethod = 'standard', verificationToken = null) => {
     setBusyId(session.id); setActionError(''); setNotice('');
     try {
       const location = session.locationMode === 'on_site' ? await getCurrentLocation() : {};
-      const checkInResult = await checkInAttendance(classId, session.id, { ...location, verificationMethod });
+      const checkInResult = await checkInAttendance(classId, session.id, { ...location, verificationMethod, verificationToken });
       setNotice(`Presensi berhasil dicatat${Number.isFinite(checkInResult.distanceMeters) ? ` pada jarak sekitar ${checkInResult.distanceMeters} m dari titik kelas` : ''}.`);
       await reload();
       return true;
@@ -171,7 +171,7 @@ export default function ClassAttendance({ role }) {
         </div>
       );
     }
-    // standard — hanya tombol biasa, tidak tampilkan tombol wajah
+    // standard â€” hanya tombol biasa, tidak tampilkan tombol wajah
     return (
       <div className="qz-attendance-session__actions">
         <Button disabled={busyId === session.id} onClick={() => checkIn(session, 'standard')}>
@@ -217,6 +217,6 @@ export default function ClassAttendance({ role }) {
 
     {status === 'success' && !attendance.length ? <Card><EmptyState icon={AttendanceIcon} title={role === 'teacher' ? 'Belum ada sesi presensi' : 'Belum ada riwayat presensi'} description={role === 'teacher' ? 'Buat sesi pertama lalu buka saat pertemuan dimulai. Pilih verifikasi lokasi hanya untuk tatap muka.' : 'Sesi aktif dan riwayat presensi yang dibagikan guru akan muncul di sini.'} /></Card> : null}
     {role === 'teacher' && (detail || detailLoading) ? <section className="qz-attendance-recap" aria-live="polite">{detailLoading ? <Skeleton height={220} /> : <Card><div className="qz-attendance-recap__header"><div><span>Rekap sesi</span><h2>{detail.title}</h2></div><div><strong>{detail.summary?.presentCount || 0}</strong><span>hadir dari {detail.summary?.totalMembers || 0} siswa</span></div></div>{detail.recap?.length ? <ul className="qz-attendance-recap__list">{detail.recap.map((member) => <li key={member.uid}><span className="qz-member-avatar" aria-hidden="true">{member.name.charAt(0).toUpperCase()}</span><div><strong>{member.name}</strong><span>{checkInSummary(member.checkIn)}</span></div><div className="qz-attendance-recap__status"><Badge tone={member.status === 'present' ? 'success' : 'warning'}>{member.status === 'present' ? 'Hadir' : 'Belum tercatat'}</Badge>{member.checkIn?.verificationMethod ? <Badge tone="neutral">{verificationMethodLabel(member.checkIn.verificationMethod)}</Badge> : null}</div></li>)}</ul> : <EmptyState icon={MembersIcon} title="Belum ada anggota" description="Rekap akan terisi setelah siswa bergabung dan melakukan presensi." />}</Card>}</section> : null}
-    <FaceCheckInDialog open={Boolean(faceDialog)} onClose={() => setFaceDialog(null)} profile={faceProfile} required={faceDialog?.verificationMode === 'face_required'} busy={busyId === faceDialog?.id} onVerified={async () => { const saved = await checkIn(faceDialog, 'face'); if (saved) setFaceDialog(null); return saved; }} />
+    <FaceCheckInDialog open={Boolean(faceDialog)} onClose={() => setFaceDialog(null)} profile={faceProfile} required={faceDialog?.verificationMode === 'face_required'} busy={busyId === faceDialog?.id} attendanceId={faceDialog?.id} classId={classId} onVerified={async (verificationToken) => { const saved = await checkIn(faceDialog, 'face', verificationToken); if (saved) setFaceDialog(null); return saved; }} />
   </div>;
 }

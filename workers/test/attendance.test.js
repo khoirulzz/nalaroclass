@@ -28,3 +28,9 @@ test('verificationMethod validation accepts valid values and defaults to standar
   assert.equal(validateCheckIn({ verificationMethod: 'face' }).verificationMethod, 'face');
   assert.throws(() => validateCheckIn({ verificationMethod: 'retina' }), (error) => error.code === 'VALIDATION_ERROR');
 });
+
+test('verificationToken validation accepts null/valid strings and rejects malformed values', () => {
+  assert.equal(validateCheckIn({ verificationMethod: 'face' }).verificationToken, null);
+  assert.equal(validateCheckIn({ verificationMethod: 'face', verificationToken: 'valid.jwt.token' }).verificationToken, 'valid.jwt.token');
+  assert.throws(() => validateCheckIn({ verificationToken: 'short' }), (error) => error.code === 'VALIDATION_ERROR');
+});

@@ -30,6 +30,12 @@ export function validateCheckIn(input) {
   if (accuracyMeters !== null && (!Number.isFinite(accuracyMeters) || accuracyMeters < 0 || accuracyMeters > 5000)) errors.accuracyMeters = 'Akurasi lokasi tidak valid.';
   const verificationMethod = clean(input.verificationMethod || 'standard');
   if (!VERIFICATION_METHODS.includes(verificationMethod)) errors.verificationMethod = 'Metode presensi tidak valid. Gunakan standard atau face.';
+  // verificationToken: optional short-lived JWT from Python Face API — required when verificationMethod=face
+  const rawToken = input.verificationToken;
+  const verificationToken = rawToken === undefined || rawToken === null ? null : clean(String(rawToken));
+  if (verificationToken !== null && (verificationToken.length < 10 || verificationToken.length > 2048)) {
+    errors.verificationToken = 'Token verifikasi wajah tidak valid.';
+  }
   if (Object.keys(errors).length) throw badRequest('VALIDATION_ERROR', 'Periksa kembali lokasi presensi.', errors);
-  return { latitude, longitude, accuracyMeters, verificationMethod };
+  return { latitude, longitude, accuracyMeters, verificationMethod, verificationToken };
 }
